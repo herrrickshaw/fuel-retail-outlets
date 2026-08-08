@@ -50,3 +50,25 @@ PPAC does not publish coordinates or a rural/urban flag per individual outlet in
 report — only the aggregate company-level split above. SSRI's scraped records have no rural/
 urban classification field either, so a per-outlet rural/urban join between the two sources
 isn't possible from data currently in this repo.
+
+---
+
+## Update — as on 01.07.2026 (Provisional)
+
+Source: Snapshot of India's Oil & Gas data, **July 2026** edition (data for June 2026),
+Table 14, user-supplied PDF `1784287517_Snapshot_of_India_Oil_and_Gas_June_2026_A5.pdf`.
+
+| Company | Total ROs | of which Rural |
+|---|---:|---:|
+| IOCL | 43,138 | 14,023 |
+| BPCL | 25,484 | 6,801 |
+| HPCL | 25,160 | 6,409 |
+| RIL/RBML/RSIL | 2,221 | 130 |
+| NEL (Nayara) | 7,059 | 2,157 |
+| Shell | 340 | 87 |
+| MRPL & Others | 280 | 77 |
+| **Total** | **103,682** | **29,684** |
+
+Alternate-fuel infrastructure at retail outlets (same table, 01.07.2026): CNG/LNG at
+7,689 ROs, EV charging at 29,503, Auto LPG 459, CBG outlets 471; 34,201 ROs carry at
+least one alternate fuel; solarised outlets 81,637.
