@@ -1,5 +1,9 @@
 # ⛽ Fuel Retail Outlets — India
 
+<!-- how-to-use-with-ai -->
+> **New here?** See [How to use this repo with AI (Claude, Gemini, ChatGPT)](HOW_TO_USE_WITH_AI.md) — clone it, paste it into an AI tool, and ask in plain English.
+
+
 Petroleum **fuel retail outlet** data, extractors, and interactive maps for India —
 covering IOCL, BPCL, HPCL, Shell and Nayara networks, sourced from public OMC /
 petroleum-retail feeds (SSRI, BPCL dealership locator, CashAtPOS) and PPAC.
