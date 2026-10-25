@@ -23,6 +23,8 @@ from datetime import datetime
 from typing import Dict, List, Tuple, Set
 from collections import defaultdict
 
+from toll_coords import plaza_lat_lng
+
 class DijkstraGraph:
     """Graph representation for shortest path calculation."""
 
@@ -43,7 +45,7 @@ class DijkstraGraph:
 
     def add_edge(self, u: str, v: str, weight: float):
         """Add weighted edge."""
-        if weight > 0:
+        if weight >= 0:  # a 0 km edge (outlet at the plaza) is valid
             self.edges[u].append((v, weight))
 
     def haversine_distance(self, lat1: float, lng1: float, lat2: float, lng2: float) -> float:
@@ -139,19 +141,22 @@ class DijkstraShortestPath:
             # Run Dijkstra from this toll plaza
             distances, predecessors = self.dijkstra(toll_id)
 
-            # Store results
+            # Store results: only outlet vertices count (not the source toll or other tolls)
+            outlet_d = [d for v, d in distances.items()
+                        if self.graph.vertices[v]['type'] == 'petrol_pump' and d != float('inf')]
             self.results[toll_id] = {
                 'distances': distances,
                 'predecessors': predecessors,
-                'min_distance': min([d for v, d in distances.items() if d != float('inf')]),
-                'visited': len([d for d in distances.values() if d != float('inf')])
+                'min_distance': min(outlet_d) if outlet_d else float('inf'),
+                'avg_distance': sum(outlet_d) / len(outlet_d) if outlet_d else float('inf'),
+                'visited': len(outlet_d)
             }
 
             self.stats['dijkstra_runs'] += 1
-            self.stats['shortest_paths_found'] += len([d for d in distances.values() if d != float('inf')])
-            self.stats['total_distance'] += sum([d for d in distances.values() if d != float('inf')])
+            self.stats['shortest_paths_found'] += len(outlet_d)
+            self.stats['total_distance'] += sum(outlet_d)
 
-            print(f"✓ Found {len([d for d in distances.values() if d != float('inf')])} shortest paths")
+            print(f"✓ Found {len(outlet_d)} shortest paths")
 
         # Calculate statistics
         if self.stats['shortest_paths_found'] > 0:
@@ -232,27 +237,16 @@ class TollRetailShortestPathAnalyzer:
             toll_df = toll_df.dropna(subset=['plaza_name'])
             toll_df = toll_df[toll_df['plaza_name'].str.strip() != '']
 
-            state_coords = {
-                'Gujarat': (22.5, 72.5), 'Maharashtra': (19.5, 75.5),
-                'Rajasthan': (27.0, 77.5), 'Haryana': (29.5, 77.0),
-                'Tamil Nadu': (11.0, 79.0), 'Karnataka': (15.0, 76.0),
-                'Andhra Pradesh': (15.5, 78.5), 'Telangana': (18.5, 78.5),
-                'Punjab': (31.0, 75.5), 'Uttar Pradesh': (27.0, 79.0),
-                'Delhi': (28.7, 77.2), 'Himachal Pradesh': (32.0, 77.0),
-                'Madhya Pradesh': (23.0, 79.5), 'West Bengal': (24.5, 88.0),
-            }
-
+            skipped = 0
             for idx, row in toll_df.iterrows():
                 state = str(row.get('state', '')).strip()
                 toll_id = f"TOLL_{idx}"
 
-                if state in state_coords:
-                    lat, lng = state_coords[state]
-                    np.random.seed(hash(state) % 2**32)
-                    lat += np.random.uniform(-0.3, 0.3)
-                    lng += np.random.uniform(-0.3, 0.3)
-                else:
-                    lat, lng = 23.0, 79.0
+                coords = plaza_lat_lng(row)
+                if coords is None:  # never invent a location (see toll_coords.py)
+                    skipped += 1
+                    continue
+                lat, lng = coords
 
                 self.graph.add_vertex(toll_id, 'toll_plaza', lat, lng)
                 self.toll_plazas.append({
@@ -263,7 +257,7 @@ class TollRetailShortestPathAnalyzer:
                     'lng': lng
                 })
 
-            print(f"  ✓ Loaded {len(self.toll_plazas)} toll plazas")
+            print(f"  ✓ Loaded {len(self.toll_plazas)} toll plazas ({skipped} skipped: no coordinates)")
         except Exception as e:
             print(f"  ✗ Error loading toll plazas: {e}")
 
@@ -380,10 +374,7 @@ class TollRetailShortestPathAnalyzer:
                         'State': toll['state'],
                         'Min Distance (km)': round(result['min_distance'], 2),
                         'Outlets Reachable': result['visited'],
-                        'Avg Distance (km)': round(
-                            result['distances'][toll['id']] if toll['id'] in result['distances'] else 0,
-                            2
-                        )
+                        'Avg Distance (km)': round(result['avg_distance'], 2)
                     })
 
             paths_df = pd.DataFrame(shortest_paths_data)
