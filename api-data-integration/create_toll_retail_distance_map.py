@@ -19,6 +19,8 @@ from datetime import datetime
 from typing import Dict, List, Tuple
 from collections import defaultdict
 
+from toll_coords import plaza_lat_lng
+
 class TollRetailDistanceAnalyzer:
     """Analyzes distances between toll plazas and retail outlets."""
 
@@ -96,26 +98,14 @@ class TollRetailDistanceAnalyzer:
             toll_df = toll_df.dropna(subset=['plaza_name'])
             toll_df = toll_df[toll_df['plaza_name'].str.strip() != '']
 
-            state_coords = {
-                'Gujarat': (22.5, 72.5), 'Maharashtra': (19.5, 75.5), 'Rajasthan': (27.0, 77.5),
-                'Haryana': (29.5, 77.0), 'Tamil Nadu': (11.0, 79.0), 'Karnataka': (15.0, 76.0),
-                'Andhra Pradesh': (15.5, 78.5), 'Telangana': (18.5, 78.5), 'Punjab': (31.0, 75.5),
-                'Uttar Pradesh': (27.0, 79.0), 'Delhi': (28.7, 77.2), 'Himachal Pradesh': (32.0, 77.0),
-                'Madhya Pradesh': (23.0, 79.5), 'West Bengal': (24.5, 88.0), 'Goa': (15.3, 73.8),
-                'Odisha': (20.5, 85.5), 'Assam': (26.0, 94.0), 'Tripura': (23.8, 91.2),
-                'Meghalaya': (25.5, 91.8), 'Nagaland': (26.2, 94.5), 'Manipur': (24.7, 93.9),
-            }
-
+            skipped = 0
             for idx, row in toll_df.iterrows():
                 state = str(row.get('state', '')).strip()
-                if state in state_coords:
-                    lat, lng = state_coords[state]
-                    # Add variation for visualization
-                    np.random.seed(hash(state) % 2**32)
-                    lat += np.random.uniform(-0.3, 0.3)
-                    lng += np.random.uniform(-0.3, 0.3)
-                else:
-                    lat, lng = 23.0, 79.0
+                coords = plaza_lat_lng(row)
+                if coords is None:  # never invent a location (see toll_coords.py)
+                    skipped += 1
+                    continue
+                lat, lng = coords
 
                 plaza = {
                     'id': idx,
@@ -129,7 +119,7 @@ class TollRetailDistanceAnalyzer:
                 self.toll_plazas.append(plaza)
 
             self.stats['toll_count'] = len(self.toll_plazas)
-            print(f"  ✓ Loaded {len(self.toll_plazas)} toll plazas")
+            print(f"  ✓ Loaded {len(self.toll_plazas)} toll plazas ({skipped} skipped: no coordinates)")
             return True
         except Exception as e:
             print(f"  ✗ Error: {e}")
@@ -162,11 +152,15 @@ class TollRetailDistanceAnalyzer:
 
         for i, toll in enumerate(self.toll_plazas):
             closest_outlets = []
+            within = {1: 0, 5: 0, 10: 0}  # counted over ALL outlets, not just the closest 10
 
             for outlet in self.retail_outlets:
                 dist = self.haversine_distance(toll['lat'], toll['lng'], outlet['lat'], outlet['lng'])
 
                 # Update statistics
+                for r in within:
+                    if dist <= r:
+                        within[r] += 1
                 if dist <= 1:
                     self.stats['outlets_within_1km'] += 1
                 if dist <= 5:
@@ -198,9 +192,9 @@ class TollRetailDistanceAnalyzer:
                 'toll_lat': toll['lat'],
                 'toll_lng': toll['lng'],
                 'closest_outlets': closest_outlets,
-                'outlets_1km': sum(1 for d in closest_outlets if d['distance'] <= 1),
-                'outlets_5km': sum(1 for d in closest_outlets if d['distance'] <= 5),
-                'outlets_10km': sum(1 for d in closest_outlets if d['distance'] <= 10),
+                'outlets_1km': within[1],
+                'outlets_5km': within[5],
+                'outlets_10km': within[10],
                 'min_distance': closest_outlets[0]['distance'] if closest_outlets else None
             })
 
