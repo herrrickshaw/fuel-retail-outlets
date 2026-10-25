@@ -101,17 +101,21 @@ class MultiSourceDatabaseIntegrator:
         except:
             return float('inf')
 
-    def find_nearby_pumps(self, pump, search_radius_km=0.5):
+    def find_nearby_pumps(self, pump, search_radius_km=0.5, same_company=True):
         """
         Find nearby pumps in unified database (for deduplication).
-        Returns matching pump IDs within search radius.
+        Returns matching pump IDs within search radius. With same_company (default), only pumps
+        of the same brand count: an IOCL and a BPCL outlet 300 m apart are two outlets.
         """
         if not pump.get('latitude') or not pump.get('longitude'):
             return []
 
+        company = str(pump.get('company', '')).strip().upper()
         nearby = []
         for idx, existing in enumerate(self.unified_database):
             if not existing.get('latitude') or not existing.get('longitude'):
+                continue
+            if same_company and str(existing.get('company', '')).strip().upper() != company:
                 continue
 
             distance = self.haversine_distance(
