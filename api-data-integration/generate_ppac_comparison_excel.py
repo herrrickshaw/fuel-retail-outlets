@@ -265,7 +265,7 @@ class PPACComparison:
         total_ssri = len(self.ssri_pumps)
         total_ppac = self.ppac_data['Count'].sum() if self.ppac_data is not None and 'Count' in self.ppac_data.columns else 0
 
-        if total_ppac == 0:
+        if total_ppac == 0 and self.ppac_data is not None:
             # Try alternative count column names
             for col in ['Total', 'Outlets', 'No. of Outlets']:
                 if col in self.ppac_data.columns:
