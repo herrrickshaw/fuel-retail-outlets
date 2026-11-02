@@ -17,11 +17,11 @@ import heapq
 import json
 import pandas as pd
 import numpy as np
-import math
 from pathlib import Path
 from datetime import datetime
 from typing import Dict, List, Tuple, Set
 from collections import defaultdict
+from geo import haversine_km
 
 class DijkstraGraph:
     """Graph representation for shortest path calculation."""
@@ -48,17 +48,7 @@ class DijkstraGraph:
 
     def haversine_distance(self, lat1: float, lng1: float, lat2: float, lng2: float) -> float:
         """Calculate distance in km using Haversine formula."""
-        R = 6371  # Earth radius in km
-
-        phi1 = math.radians(lat1)
-        phi2 = math.radians(lat2)
-        delta_phi = math.radians(lat2 - lat1)
-        delta_lambda = math.radians(lng2 - lng1)
-
-        a = math.sin(delta_phi/2)**2 + math.cos(phi1) * math.cos(phi2) * math.sin(delta_lambda/2)**2
-        c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
-
-        return R * c
+        return haversine_km(lat1, lng1, lat2, lng2)
 
 
 class DijkstraShortestPath:

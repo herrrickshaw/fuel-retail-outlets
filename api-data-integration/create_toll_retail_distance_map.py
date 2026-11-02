@@ -13,11 +13,11 @@ Creates interactive map with:
 import pandas as pd
 import json
 import numpy as np
-import math
 from pathlib import Path
 from datetime import datetime
 from typing import Dict, List, Tuple
 from collections import defaultdict
+from geo import haversine_km_or_inf
 
 class TollRetailDistanceAnalyzer:
     """Analyzes distances between toll plazas and retail outlets."""
@@ -137,18 +137,7 @@ class TollRetailDistanceAnalyzer:
 
     def haversine_distance(self, lat1: float, lng1: float, lat2: float, lng2: float) -> float:
         """Calculate distance in km."""
-        try:
-            R = 6371
-            phi1 = math.radians(lat1)
-            phi2 = math.radians(lat2)
-            delta_phi = math.radians(lat2 - lat1)
-            delta_lambda = math.radians(lng2 - lng1)
-
-            a = math.sin(delta_phi/2)**2 + math.cos(phi1) * math.cos(phi2) * math.sin(delta_lambda/2)**2
-            c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
-            return R * c
-        except:
-            return float('inf')
+        return haversine_km_or_inf(lat1, lng1, lat2, lng2)
 
     def calculate_distances(self):
         """Calculate distances between all toll plazas and outlets."""

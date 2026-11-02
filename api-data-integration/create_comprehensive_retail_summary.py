@@ -38,7 +38,7 @@ class RetailOutletsSummary:
             with open(ssri_json, 'r') as f:
                 self.ssri_data = json.load(f)
             print(f"     ✓ Loaded {len(self.ssri_data)} SSRI pumps")
-        except:
+        except (OSError, ValueError):
             self.ssri_data = []
             print("     ✗ SSRI data not found")
 
@@ -48,7 +48,7 @@ class RetailOutletsSummary:
             bpcl_csv = "/Users/umashankar/api-data-integration/outlet_data_bpcl_complete/bpcl_complete_dealerships_20260624_081647.csv"
             self.bpcl_data = pd.read_csv(bpcl_csv)
             print(f"     ✓ Loaded {len(self.bpcl_data)} BPCL dealerships")
-        except:
+        except (OSError, ImportError, ValueError, pd.errors.ParserError):
             self.bpcl_data = pd.DataFrame()
             print("     ✗ BPCL data not found")
 
@@ -58,7 +58,7 @@ class RetailOutletsSummary:
             cashatpos_csv = "/Users/umashankar/api-data-integration/outlet_data_cashatpos/cashatpos_fuel_stations_20260624_082138.csv"
             self.cashatpos_data = pd.read_csv(cashatpos_csv)
             print(f"     ✓ Loaded {len(self.cashatpos_data)} Cash@PoS stations")
-        except:
+        except (OSError, ImportError, ValueError, pd.errors.ParserError):
             self.cashatpos_data = pd.DataFrame()
             print("     ✗ Cash@PoS data not found")
 
@@ -69,7 +69,7 @@ class RetailOutletsSummary:
             self.ppac_data = pd.read_excel(ppac_excel, header=7)
             self.ppac_data = self.ppac_data.dropna(how='all')
             print(f"     ✓ Loaded {len(self.ppac_data)} PPAC outlets")
-        except:
+        except (OSError, ImportError, ValueError, pd.errors.ParserError):
             self.ppac_data = pd.DataFrame()
             print("     ✗ PPAC data not found")
 
