@@ -315,7 +315,22 @@ class TollRetailDistanceAnalyzer:
 
         print(f"\n🗺️  Creating interactive distance map...")
 
-        html = f"""<!DOCTYPE html>
+        html = (
+            self._html_head() +
+            self._html_map_and_toll_markers() +
+            self._html_outlets_and_legend() +
+            self._html_stats()
+        )
+
+        with open(output_path, 'w') as f:
+            f.write(html)
+
+        print(f"  ✓ Map created: {output_path}")
+        return output_path
+
+    def _html_head(self) -> str:
+        """Return one fragment of the page markup."""
+        return f"""<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -368,7 +383,11 @@ class TollRetailDistanceAnalyzer:
             border-radius: 50%;
         }}
     </style>
-</head>
+"""
+
+    def _html_map_and_toll_markers(self) -> str:
+        """Return one fragment of the page markup."""
+        return f"""</head>
 <body>
     <div id="map"></div>
     <script>
@@ -416,7 +435,11 @@ class TollRetailDistanceAnalyzer:
             marker.addTo(map);
         }});
 
-        // Outlet markers (sampled for performance)
+"""
+
+    def _html_outlets_and_legend(self) -> str:
+        """Return one fragment of the page markup."""
+        return f"""        // Outlet markers (sampled for performance)
         outletData.forEach(outlet => {{
             const marker = L.circleMarker([outlet.lat, outlet.lng], {{
                 radius: 3, fillColor: '#558b2f', color: 'rgba(0,0,0,0.2)',
@@ -452,7 +475,11 @@ class TollRetailDistanceAnalyzer:
         }};
         legend.addTo(map);
 
-        // Statistics
+"""
+
+    def _html_stats(self) -> str:
+        """Return one fragment of the page markup."""
+        return f"""        // Statistics
         const stats = L.control({{ position: 'topright' }});
         stats.onAdd = function() {{
             const div = L.DomUtil.create('div', 'stats');
@@ -485,12 +512,6 @@ class TollRetailDistanceAnalyzer:
     </script>
 </body>
 </html>"""
-
-        with open(output_path, 'w') as f:
-            f.write(html)
-
-        print(f"  ✓ Map created: {output_path}")
-        return output_path
 
     def run(self):
         """Run complete analysis."""
