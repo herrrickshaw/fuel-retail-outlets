@@ -23,6 +23,16 @@ from typing import Dict, List, Tuple, Set
 from collections import defaultdict
 from geo import haversine_km
 
+# Input locations (unchanged from the original in-function literals).
+SSRI_PUMPS_JSON = "/Users/umashankar/api-data-integration/outlet_data_ssri_complete/ssri_all_pumps_20260624_063249.json"
+CASHATPOS_CSV = "/Users/umashankar/api-data-integration/outlet_data_cashatpos/cashatpos_fuel_stations_20260624_082138.csv"
+# State-centre fallback used when a Cash@PoS row has no coordinates.
+CASHATPOS_STATE_FALLBACK = {
+    'Gujarat': (22.5, 72.5), 'Maharashtra': (19.5, 75.5),
+    'Tamil Nadu': (11.0, 79.0), 'Karnataka': (15.0, 76.0),
+}
+
+
 class ServiceFilteredDijkstra:
     """Dijkstra with POS/ATM/cash service filtering."""
 
@@ -119,10 +129,22 @@ class ServiceFilteredDijkstra:
 
         all_outlets = []
 
-        # Load SSRI petrol pumps
         print("  Loading SSRI petrol pumps...")
+        self._load_ssri_pumps(all_outlets)
+
+        self.stats['total_outlets_available'] = len(all_outlets)
+
+        print("  Loading Cash@PoS/ATM service outlets...")
+        self._load_cashatpos_outlets(all_outlets)
+
+        self._update_filter_stats(all_outlets)
+        self._print_filter_report()
+        self._add_service_vertices()
+
+    def _load_ssri_pumps(self, all_outlets):
+        """Append up to 2,000 SSRI pumps (those with coordinates) to all_outlets; errors are reported, not raised."""
         try:
-            ssri_json = "/Users/umashankar/api-data-integration/outlet_data_ssri_complete/ssri_all_pumps_20260624_063249.json"
+            ssri_json = SSRI_PUMPS_JSON
             with open(ssri_json, 'r') as f:
                 ssri_data = json.load(f)
 
@@ -145,31 +167,26 @@ class ServiceFilteredDijkstra:
         except Exception as e:
             print(f"    ✗ Error: {e}")
 
-        self.stats['total_outlets_available'] = len(all_outlets)
+    @staticmethod
+    def _cashatpos_coords(row):
+        """(lat, lng) for a Cash@PoS row, falling back to the state centre; None if neither is available."""
+        lat = row.get('latitude')
+        lng = row.get('longitude')
+        if pd.isna(lat) or pd.isna(lng):
+            return CASHATPOS_STATE_FALLBACK.get(str(row.get('state', '')).strip())
+        return float(lat), float(lng)
 
-        # Load Cash@PoS outlets with services
-        print("  Loading Cash@PoS/ATM service outlets...")
+    def _load_cashatpos_outlets(self, all_outlets):
+        """Append Cash@PoS service outlets to all_outlets and self.service_outlets; errors are reported, not raised."""
         try:
-            cashatpos_csv = "/Users/umashankar/api-data-integration/outlet_data_cashatpos/cashatpos_fuel_stations_20260624_082138.csv"
+            cashatpos_csv = CASHATPOS_CSV
             cashatpos_df = pd.read_csv(cashatpos_csv)
 
             for idx, row in cashatpos_df.iterrows():
-                lat = row.get('latitude')
-                lng = row.get('longitude')
-
-                # If no coordinates, use state center as fallback
-                if pd.isna(lat) or pd.isna(lng):
-                    state = str(row.get('state', '')).strip()
-                    state_coords = {
-                        'Gujarat': (22.5, 72.5), 'Maharashtra': (19.5, 75.5),
-                        'Tamil Nadu': (11.0, 79.0), 'Karnataka': (15.0, 76.0),
-                    }
-                    if state in state_coords:
-                        lat, lng = state_coords[state]
-                    else:
-                        continue
-                else:
-                    lat, lng = float(lat), float(lng)
+                coords = self._cashatpos_coords(row)
+                if coords is None:
+                    continue
+                lat, lng = coords
 
                 outlet = {
                     'id': f"OUTLET_CASHATPOS_{idx}",
@@ -192,7 +209,8 @@ class ServiceFilteredDijkstra:
         except Exception as e:
             print(f"    ✗ Error: {e}")
 
-        # Calculate filter statistics
+    def _update_filter_stats(self, all_outlets):
+        """Record outlet totals and the service-filter percentage."""
         self.stats['total_outlets_available'] = len(all_outlets)
         self.stats['service_outlets_filtered'] = len(self.service_outlets)
 
@@ -202,13 +220,16 @@ class ServiceFilteredDijkstra:
                 self.stats['total_outlets_available'] * 100
             )
 
+    def _print_filter_report(self):
+        """Print the filtering results block."""
         print(f"\n📊 Filtering Results:")
         print(f"  Total outlets available: {self.stats['total_outlets_available']}")
         print(f"  Service-enabled outlets: {self.stats['service_outlets_filtered']}")
         print(f"  Filter percentage: {self.stats['filter_percentage']:.2f}%")
         print(f"  Reduction ratio: {self.stats['total_outlets_available'] / max(self.stats['service_outlets_filtered'], 1):.1f}:1")
 
-        # Add filtered outlets to graph
+    def _add_service_vertices(self):
+        """Add every service outlet to the graph and record the vertex count."""
         print(f"\n🔗 Adding service outlets to graph...")
         for outlet in self.service_outlets:
             services = {
