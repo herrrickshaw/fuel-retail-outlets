@@ -321,115 +321,121 @@ class ServiceFilteredDijkstra:
         output_path = f"./api-data-integration/DIJKSTRA_SERVICE_OUTLETS_{self.timestamp}.xlsx"
 
         with pd.ExcelWriter(output_path, engine='openpyxl') as writer:
-            # Summary with filters
             print("  Writing SUMMARY sheet...")
-            summary = {
-                'Metric': [
-                    'Total Outlets Available',
-                    'Service-Enabled Outlets (Filtered)',
-                    'Filter Effectiveness',
-                    'Toll Plazas Analyzed',
-                    'Dijkstra Runs',
-                    'Service Paths Found',
-                    'Avg Distance to Service (km)',
-                    'Service Filter Type',
-                    'Services Included',
-                    'Bank Partner',
-                    'Graph Vertices',
-                    'Graph Edges (to service outlets)'
-                ],
-                'Value': [
-                    f"{self.stats['total_outlets_available']:,}",
-                    f"{self.stats['service_outlets_filtered']:,}",
-                    f"{self.stats['filter_percentage']:.2f}%",
-                    len(self.toll_plazas),
-                    self.stats['dijkstra_runs'],
-                    self.stats['shortest_paths_found'],
-                    f"{self.stats['avg_distance_to_service']:.2f}",
-                    'POS/ATM/Cash Dispensing',
-                    'ATM, Point of Sale, Cash withdrawal',
-                    'State Bank of India (SBI)',
-                    self.stats['graph_vertices'],
-                    self.stats['graph_edges']
-                ]
-            }
-            summary_df = pd.DataFrame(summary)
-            summary_df.to_excel(writer, sheet_name='SUMMARY', index=False)
+            self._service_summary_frame().to_excel(writer, sheet_name='SUMMARY', index=False)
 
-            # Toll to service outlet paths
             print("  Writing TOLL TO SERVICE OUTLETS sheet...")
-            toll_service_data = []
+            self._toll_service_frame().to_excel(writer, sheet_name='TOLL TO SERVICE OUTLETS', index=False)
 
-            for toll in self.toll_plazas[:100]:
-                if toll['id'] in self.results:
-                    result = self.results[toll['id']]
-                    toll_service_data.append({
-                        'Toll Plaza': toll['name'],
-                        'State': toll['state'],
-                        'Min Distance to Service (km)': round(result['min_service_distance'], 2),
-                        'Service Outlets Reachable': result['service_outlets_reachable'],
-                        'ATM Coverage': 'Yes (SBI)',
-                        'POS Available': 'Yes',
-                        'Cash Dispensing': 'Yes'
-                    })
-
-            service_df = pd.DataFrame(toll_service_data)
-            service_df.to_excel(writer, sheet_name='TOLL TO SERVICE OUTLETS', index=False)
-
-            # Service outlet details
             print("  Writing SERVICE OUTLET DIRECTORY sheet...")
-            outlet_data = []
+            self._outlet_directory_frame().to_excel(writer, sheet_name='SERVICE OUTLET DIRECTORY', index=False)
 
-            for outlet in self.service_outlets[:100]:
-                outlet_data.append({
-                    'Outlet Name': outlet['name'],
-                    'Service Type': outlet['type'],
-                    'Company': outlet['company'],
-                    'State': outlet.get('state', 'N/A'),
-                    'Has ATM': '✓' if outlet['has_atm'] else '✗',
-                    'Has POS': '✓' if outlet['has_pos'] else '✗',
-                    'Has Cash': '✓' if outlet['has_cash'] else '✗',
-                    'Bank Partner': outlet.get('bank_partner', 'SBI'),
-                    'Source': outlet['source']
-                })
-
-            outlets_df = pd.DataFrame(outlet_data)
-            outlets_df.to_excel(writer, sheet_name='SERVICE OUTLET DIRECTORY', index=False)
-
-            # Filter effectiveness analysis
             print("  Writing FILTER ANALYSIS sheet...")
-            filter_analysis = {
-                'Filter Component': [
-                    'ATM (Automatic Teller Machine)',
-                    'POS (Point of Sale)',
-                    'Cash Dispensing',
-                    'Bank Partner (SBI)',
-                    'Transaction Capability',
-                    'Service Completeness'
-                ],
-                'Status': [
-                    f"✓ {self.stats['service_outlets_filtered']} outlets",
-                    f"✓ {self.stats['service_outlets_filtered']} outlets",
-                    f"✓ {self.stats['service_outlets_filtered']} outlets",
-                    f"✓ All filtered outlets",
-                    f"✓ Full financial transaction support",
-                    f"✓ All 3 services required"
-                ],
-                'Use Case': [
-                    'Cash withdrawal for toll payment',
-                    'Digital/card transaction capability',
-                    'Direct cash access for travelers',
-                    'Banking infrastructure trust',
-                    'Flexible payment options',
-                    'Complete financial service availability'
-                ]
-            }
-            filter_df = pd.DataFrame(filter_analysis)
-            filter_df.to_excel(writer, sheet_name='FILTER ANALYSIS', index=False)
+            self._filter_analysis_frame().to_excel(writer, sheet_name='FILTER ANALYSIS', index=False)
 
         file_size = Path(output_path).stat().st_size / (1024*1024)
         print(f"  ✓ Excel created: {output_path} ({file_size:.2f}MB)")
         return output_path
+
+    def _service_summary_frame(self):
+        """Metric/value table of filter statistics and graph size."""
+        summary = {
+            'Metric': [
+                'Total Outlets Available',
+                'Service-Enabled Outlets (Filtered)',
+                'Filter Effectiveness',
+                'Toll Plazas Analyzed',
+                'Dijkstra Runs',
+                'Service Paths Found',
+                'Avg Distance to Service (km)',
+                'Service Filter Type',
+                'Services Included',
+                'Bank Partner',
+                'Graph Vertices',
+                'Graph Edges (to service outlets)'
+            ],
+            'Value': [
+                f"{self.stats['total_outlets_available']:,}",
+                f"{self.stats['service_outlets_filtered']:,}",
+                f"{self.stats['filter_percentage']:.2f}%",
+                len(self.toll_plazas),
+                self.stats['dijkstra_runs'],
+                self.stats['shortest_paths_found'],
+                f"{self.stats['avg_distance_to_service']:.2f}",
+                'POS/ATM/Cash Dispensing',
+                'ATM, Point of Sale, Cash withdrawal',
+                'State Bank of India (SBI)',
+                self.stats['graph_vertices'],
+                self.stats['graph_edges']
+            ]
+        }
+        return pd.DataFrame(summary)
+
+    def _toll_service_frame(self):
+        """Per-plaza nearest service outlet (first 100 plazas that have results)."""
+        toll_service_data = []
+
+        for toll in self.toll_plazas[:100]:
+            if toll['id'] in self.results:
+                result = self.results[toll['id']]
+                toll_service_data.append({
+                    'Toll Plaza': toll['name'],
+                    'State': toll['state'],
+                    'Min Distance to Service (km)': round(result['min_service_distance'], 2),
+                    'Service Outlets Reachable': result['service_outlets_reachable'],
+                    'ATM Coverage': 'Yes (SBI)',
+                    'POS Available': 'Yes',
+                    'Cash Dispensing': 'Yes'
+                })
+        return pd.DataFrame(toll_service_data)
+
+    def _outlet_directory_frame(self):
+        """Directory of the first 100 service-enabled outlets."""
+        outlet_data = []
+
+        for outlet in self.service_outlets[:100]:
+            outlet_data.append({
+                'Outlet Name': outlet['name'],
+                'Service Type': outlet['type'],
+                'Company': outlet['company'],
+                'State': outlet.get('state', 'N/A'),
+                'Has ATM': '✓' if outlet['has_atm'] else '✗',
+                'Has POS': '✓' if outlet['has_pos'] else '✗',
+                'Has Cash': '✓' if outlet['has_cash'] else '✗',
+                'Bank Partner': outlet.get('bank_partner', 'SBI'),
+                'Source': outlet['source']
+            })
+        return pd.DataFrame(outlet_data)
+
+    def _filter_analysis_frame(self):
+        """Static description of each filter component and its status."""
+        filter_analysis = {
+            'Filter Component': [
+                'ATM (Automatic Teller Machine)',
+                'POS (Point of Sale)',
+                'Cash Dispensing',
+                'Bank Partner (SBI)',
+                'Transaction Capability',
+                'Service Completeness'
+            ],
+            'Status': [
+                f"✓ {self.stats['service_outlets_filtered']} outlets",
+                f"✓ {self.stats['service_outlets_filtered']} outlets",
+                f"✓ {self.stats['service_outlets_filtered']} outlets",
+                f"✓ All filtered outlets",
+                f"✓ Full financial transaction support",
+                f"✓ All 3 services required"
+            ],
+            'Use Case': [
+                'Cash withdrawal for toll payment',
+                'Digital/card transaction capability',
+                'Direct cash access for travelers',
+                'Banking infrastructure trust',
+                'Flexible payment options',
+                'Complete financial service availability'
+            ]
+        }
+        return pd.DataFrame(filter_analysis)
 
     def print_summary(self):
         """Print analysis summary."""
