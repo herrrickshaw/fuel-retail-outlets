@@ -334,52 +334,72 @@ out center;"""
         print(f"\n💾 Exporting data...")
 
         try:
-            # Convert to DataFrame
             df = pd.DataFrame(self.deduped_outlets)
 
-            # CSV Export
-            csv_path = f"{output_dir}/hybrid_outlets_{timestamp}.csv"
-            df.to_csv(csv_path, index=False)
-            print(f"  ✓ CSV: {csv_path}")
+            self._write_csv(df, output_dir, timestamp)
+            self._write_geojson(df, output_dir, timestamp)
+            self._write_json(output_dir, timestamp)
+            self._write_js(output_dir, timestamp)
+            self._write_stats(df, output_dir, timestamp)
 
-            # GeoJSON Export (for mapping)
-            geojson = {
-                "type": "FeatureCollection",
-                "features": []
+            print(f"\n✅ Export complete: {output_dir}/")
+            return output_dir
+
+        except Exception as e:
+            print(f"  ✗ Export error: {e}")
+            return None
+
+    def _write_csv(self, df, output_dir, timestamp):
+        """Write the outlets table as CSV."""
+        csv_path = f"{output_dir}/hybrid_outlets_{timestamp}.csv"
+        df.to_csv(csv_path, index=False)
+        print(f"  ✓ CSV: {csv_path}")
+
+    @staticmethod
+    def _row_feature(row):
+        """GeoJSON Point feature for one outlet row (longitude, latitude order)."""
+        return {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [float(row['longitude']), float(row['latitude'])]
+            },
+            "properties": {
+                "name": str(row.get('name', 'Unknown')),
+                "company": str(row.get('company', '')),
+                "source": str(row.get('source', '')),
+                "city": str(row.get('city', '')),
+                "state": str(row.get('state', ''))
             }
+        }
 
-            for _, row in df.iterrows():
-                if pd.notna(row.get('latitude')) and pd.notna(row.get('longitude')):
-                    feature = {
-                        "type": "Feature",
-                        "geometry": {
-                            "type": "Point",
-                            "coordinates": [float(row['longitude']), float(row['latitude'])]
-                        },
-                        "properties": {
-                            "name": str(row.get('name', 'Unknown')),
-                            "company": str(row.get('company', '')),
-                            "source": str(row.get('source', '')),
-                            "city": str(row.get('city', '')),
-                            "state": str(row.get('state', ''))
-                        }
-                    }
-                    geojson["features"].append(feature)
+    def _write_geojson(self, df, output_dir, timestamp):
+        """Write a GeoJSON FeatureCollection of outlets that have coordinates."""
+        geojson = {
+            "type": "FeatureCollection",
+            "features": []
+        }
 
-            geojson_path = f"{output_dir}/hybrid_outlets_{timestamp}.geojson"
-            with open(geojson_path, 'w') as f:
-                json.dump(geojson, f, indent=2)
-            print(f"  ✓ GeoJSON: {geojson_path} ({len(geojson['features'])} features)")
+        for _, row in df.iterrows():
+            if pd.notna(row.get('latitude')) and pd.notna(row.get('longitude')):
+                geojson["features"].append(self._row_feature(row))
 
-            # JSON Export
-            json_path = f"{output_dir}/hybrid_outlets_{timestamp}.json"
-            with open(json_path, 'w') as f:
-                json.dump(self.deduped_outlets, f, indent=2)
-            print(f"  ✓ JSON: {json_path}")
+        geojson_path = f"{output_dir}/hybrid_outlets_{timestamp}.geojson"
+        with open(geojson_path, 'w') as f:
+            json.dump(geojson, f, indent=2)
+        print(f"  ✓ GeoJSON: {geojson_path} ({len(geojson['features'])} features)")
 
-            # JavaScript Data File (for maps)
-            js_path = f"{output_dir}/hybrid_outlets_{timestamp}.js"
-            js_content = f"""
+    def _write_json(self, output_dir, timestamp):
+        """Write the outlets as indented JSON."""
+        json_path = f"{output_dir}/hybrid_outlets_{timestamp}.json"
+        with open(json_path, 'w') as f:
+            json.dump(self.deduped_outlets, f, indent=2)
+        print(f"  ✓ JSON: {json_path}")
+
+    def _write_js(self, output_dir, timestamp):
+        """Write a JavaScript data file (HYBRID_OUTLETS + OUTLET_STATS) for maps."""
+        js_path = f"{output_dir}/hybrid_outlets_{timestamp}.js"
+        js_content = f"""
 // Hybrid Retail Outlet Database
 // Generated: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
 // Source: PPAC (Official) + OpenStreetMap + Google Maps
@@ -394,37 +414,31 @@ const OUTLET_STATS = {{
     duplicates_removed: {self.stats['duplicates_removed']}
 }};
 """
-            with open(js_path, 'w') as f:
-                f.write(js_content)
-            print(f"  ✓ JavaScript: {js_path}")
+        with open(js_path, 'w') as f:
+            f.write(js_content)
+        print(f"  ✓ JavaScript: {js_path}")
 
-            # Statistics
-            stats = {
-                "aggregation_timestamp": timestamp,
-                "total_outlets": len(self.deduped_outlets),
-                "with_coordinates": len(df.dropna(subset=['latitude', 'longitude'])),
-                "cities": df['city'].nunique() if 'city' in df.columns else 0,
-                "states": df['state'].nunique() if 'state' in df.columns else 0,
-                "companies": df['company'].nunique() if 'company' in df.columns else 0,
-                "sources": {
-                    "ppac": self.stats['ppac'],
-                    "osm": self.stats['osm'],
-                    "google": self.stats['google'],
-                    "duplicates_removed": self.stats['duplicates_removed']
-                }
+    def _write_stats(self, df, output_dir, timestamp):
+        """Write aggregate statistics (counts, distinct cities/states/companies, per-source totals)."""
+        stats = {
+            "aggregation_timestamp": timestamp,
+            "total_outlets": len(self.deduped_outlets),
+            "with_coordinates": len(df.dropna(subset=['latitude', 'longitude'])),
+            "cities": df['city'].nunique() if 'city' in df.columns else 0,
+            "states": df['state'].nunique() if 'state' in df.columns else 0,
+            "companies": df['company'].nunique() if 'company' in df.columns else 0,
+            "sources": {
+                "ppac": self.stats['ppac'],
+                "osm": self.stats['osm'],
+                "google": self.stats['google'],
+                "duplicates_removed": self.stats['duplicates_removed']
             }
+        }
 
-            stats_path = f"{output_dir}/hybrid_outlets_stats_{timestamp}.json"
-            with open(stats_path, 'w') as f:
-                json.dump(stats, f, indent=2)
-            print(f"  ✓ Statistics: {stats_path}")
-
-            print(f"\n✅ Export complete: {output_dir}/")
-            return output_dir
-
-        except Exception as e:
-            print(f"  ✗ Export error: {e}")
-            return None
+        stats_path = f"{output_dir}/hybrid_outlets_stats_{timestamp}.json"
+        with open(stats_path, 'w') as f:
+            json.dump(stats, f, indent=2)
+        print(f"  ✓ Statistics: {stats_path}")
 
     def print_summary(self):
         """Print aggregation summary"""

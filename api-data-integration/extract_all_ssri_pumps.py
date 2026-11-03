@@ -31,8 +31,9 @@ from pathlib import Path
 from datetime import datetime
 from typing import Dict, List
 import time
+from ssri_pump_export import PumpExportMixin
 
-class CompleteSSRIExtractor:
+class CompleteSSRIExtractor(PumpExportMixin):
     """
     Multi-strategy petrol pump extraction engine for SSRI API.
 
@@ -476,97 +477,11 @@ class CompleteSSRIExtractor:
         pumps_list = list(self.all_pumps.values())
 
         try:
-            # CSV
-            print(f"\n  Exporting CSV...")
-            df = pd.DataFrame(pumps_list)
-            csv_path = f"{output_dir}/ssri_all_pumps_{self.timestamp}.csv"
-            df.to_csv(csv_path, index=False)
-            csv_size = Path(csv_path).stat().st_size / (1024*1024)
-            print(f"    ✓ {csv_path} ({csv_size:.2f}MB)")
-
-            # JavaScript
-            print(f"  Exporting JavaScript...")
-            js_path = f"{output_dir}/ssri_all_pumps_{self.timestamp}.js"
-            with open(js_path, 'w') as f:
-                f.write(f"// SSRI Complete Petrol Pumps Database\n")
-                f.write(f"// Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
-                f.write(f"// Total pumps: {len(pumps_list)}\n\n")
-                f.write(f"const FUEL_PUMP_LOCATIONS = {json.dumps(pumps_list)};\n\n")
-                f.write(f"const OUTLET_STATS = {{\n")
-                f.write(f"  total: {len(pumps_list)},\n")
-                f.write(f"  states: {len(set(p['state'] for p in pumps_list))},\n")
-                f.write(f"  cities: {len(set(p['city'] for p in pumps_list))},\n")
-                f.write(f"  companies: {len(set(p['company'] for p in pumps_list))},\n")
-                f.write(f"  source: 'SSRI Petrol Pumps API (Complete)'\n")
-                f.write(f"}};\n")
-            js_size = Path(js_path).stat().st_size / (1024*1024)
-            print(f"    ✓ {js_path} ({js_size:.2f}MB)")
-
-            # GeoJSON
-            print(f"  Exporting GeoJSON...")
-            geojson = {"type": "FeatureCollection", "features": []}
-            for pump in pumps_list:
-                if pump['latitude'] and pump['longitude']:
-                    geojson["features"].append({
-                        "type": "Feature",
-                        "geometry": {
-                            "type": "Point",
-                            "coordinates": [pump['longitude'], pump['latitude']]
-                        },
-                        "properties": {
-                            "name": pump['name'],
-                            "company": pump['company'],
-                            "city": pump['city'],
-                            "state": pump['state'],
-                            "address": pump.get('address', '')
-                        }
-                    })
-
-            geojson_path = f"{output_dir}/ssri_all_pumps_{self.timestamp}.geojson"
-            with open(geojson_path, 'w') as f:
-                json.dump(geojson, f)
-            geojson_size = Path(geojson_path).stat().st_size / (1024*1024)
-            print(f"    ✓ {geojson_path} ({geojson_size:.2f}MB, {len(geojson['features'])} features)")
-
-            # JSON
-            print(f"  Exporting JSON...")
-            json_path = f"{output_dir}/ssri_all_pumps_{self.timestamp}.json"
-            with open(json_path, 'w') as f:
-                json.dump(pumps_list, f, indent=2)
-            json_size = Path(json_path).stat().st_size / (1024*1024)
-            print(f"    ✓ {json_path} ({json_size:.2f}MB)")
-
-            # Summary statistics
-            print(f"  Generating summary...")
-
-            state_counts = {}
-            city_counts = {}
-            company_counts = {}
-
-            for pump in pumps_list:
-                state = pump['state']
-                city = pump['city']
-                company = pump['company']
-
-                state_counts[state] = state_counts.get(state, 0) + 1
-                city_counts[city] = city_counts.get(city, 0) + 1
-                company_counts[company] = company_counts.get(company, 0) + 1
-
-            summary = {
-                'timestamp': self.timestamp,
-                'total_pumps': len(pumps_list),
-                'unique_states': len(state_counts),
-                'unique_cities': len(city_counts),
-                'unique_companies': len(company_counts),
-                'states': dict(sorted(state_counts.items(), key=lambda x: x[1], reverse=True)),
-                'companies': dict(sorted(company_counts.items(), key=lambda x: x[1], reverse=True)),
-                'extraction_stats': self.stats
-            }
-
-            summary_path = f"{output_dir}/ssri_all_pumps_summary_{self.timestamp}.json"
-            with open(summary_path, 'w') as f:
-                json.dump(summary, f, indent=2)
-            print(f"    ✓ {summary_path}")
+            self._export_csv(pumps_list, output_dir)
+            self._export_js(pumps_list, output_dir, datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+            self._export_geojson(pumps_list, output_dir)
+            self._export_json(pumps_list, output_dir)
+            summary = self._export_summary(pumps_list, output_dir)
 
             print(f"\n✅ Export complete to {output_dir}/")
             return output_dir, summary

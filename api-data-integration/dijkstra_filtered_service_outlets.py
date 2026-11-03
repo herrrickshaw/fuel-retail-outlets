@@ -17,11 +17,21 @@ import heapq
 import json
 import pandas as pd
 import numpy as np
-import math
 from pathlib import Path
 from datetime import datetime
 from typing import Dict, List, Tuple, Set
 from collections import defaultdict
+from geo import haversine_km
+
+# Input locations (unchanged from the original in-function literals).
+SSRI_PUMPS_JSON = "/Users/umashankar/api-data-integration/outlet_data_ssri_complete/ssri_all_pumps_20260624_063249.json"
+CASHATPOS_CSV = "/Users/umashankar/api-data-integration/outlet_data_cashatpos/cashatpos_fuel_stations_20260624_082138.csv"
+# State-centre fallback used when a Cash@PoS row has no coordinates.
+CASHATPOS_STATE_FALLBACK = {
+    'Gujarat': (22.5, 72.5), 'Maharashtra': (19.5, 75.5),
+    'Tamil Nadu': (11.0, 79.0), 'Karnataka': (15.0, 76.0),
+}
+
 
 class ServiceFilteredDijkstra:
     """Dijkstra with POS/ATM/cash service filtering."""
@@ -68,15 +78,7 @@ class ServiceFilteredDijkstra:
 
         def haversine_distance(self, lat1: float, lng1: float, lat2: float, lng2: float) -> float:
             """Calculate distance in km."""
-            R = 6371
-            phi1 = math.radians(lat1)
-            phi2 = math.radians(lat2)
-            delta_phi = math.radians(lat2 - lat1)
-            delta_lambda = math.radians(lng2 - lng1)
-
-            a = math.sin(delta_phi/2)**2 + math.cos(phi1) * math.cos(phi2) * math.sin(delta_lambda/2)**2
-            c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
-            return R * c
+            return haversine_km(lat1, lng1, lat2, lng2)
 
     def load_toll_plazas(self):
         """Load toll plaza data."""
@@ -127,10 +129,22 @@ class ServiceFilteredDijkstra:
 
         all_outlets = []
 
-        # Load SSRI petrol pumps
         print("  Loading SSRI petrol pumps...")
+        self._load_ssri_pumps(all_outlets)
+
+        self.stats['total_outlets_available'] = len(all_outlets)
+
+        print("  Loading Cash@PoS/ATM service outlets...")
+        self._load_cashatpos_outlets(all_outlets)
+
+        self._update_filter_stats(all_outlets)
+        self._print_filter_report()
+        self._add_service_vertices()
+
+    def _load_ssri_pumps(self, all_outlets):
+        """Append up to 2,000 SSRI pumps (those with coordinates) to all_outlets; errors are reported, not raised."""
         try:
-            ssri_json = "/Users/umashankar/api-data-integration/outlet_data_ssri_complete/ssri_all_pumps_20260624_063249.json"
+            ssri_json = SSRI_PUMPS_JSON
             with open(ssri_json, 'r') as f:
                 ssri_data = json.load(f)
 
@@ -153,31 +167,26 @@ class ServiceFilteredDijkstra:
         except Exception as e:
             print(f"    ✗ Error: {e}")
 
-        self.stats['total_outlets_available'] = len(all_outlets)
+    @staticmethod
+    def _cashatpos_coords(row):
+        """(lat, lng) for a Cash@PoS row, falling back to the state centre; None if neither is available."""
+        lat = row.get('latitude')
+        lng = row.get('longitude')
+        if pd.isna(lat) or pd.isna(lng):
+            return CASHATPOS_STATE_FALLBACK.get(str(row.get('state', '')).strip())
+        return float(lat), float(lng)
 
-        # Load Cash@PoS outlets with services
-        print("  Loading Cash@PoS/ATM service outlets...")
+    def _load_cashatpos_outlets(self, all_outlets):
+        """Append Cash@PoS service outlets to all_outlets and self.service_outlets; errors are reported, not raised."""
         try:
-            cashatpos_csv = "/Users/umashankar/api-data-integration/outlet_data_cashatpos/cashatpos_fuel_stations_20260624_082138.csv"
+            cashatpos_csv = CASHATPOS_CSV
             cashatpos_df = pd.read_csv(cashatpos_csv)
 
             for idx, row in cashatpos_df.iterrows():
-                lat = row.get('latitude')
-                lng = row.get('longitude')
-
-                # If no coordinates, use state center as fallback
-                if pd.isna(lat) or pd.isna(lng):
-                    state = str(row.get('state', '')).strip()
-                    state_coords = {
-                        'Gujarat': (22.5, 72.5), 'Maharashtra': (19.5, 75.5),
-                        'Tamil Nadu': (11.0, 79.0), 'Karnataka': (15.0, 76.0),
-                    }
-                    if state in state_coords:
-                        lat, lng = state_coords[state]
-                    else:
-                        continue
-                else:
-                    lat, lng = float(lat), float(lng)
+                coords = self._cashatpos_coords(row)
+                if coords is None:
+                    continue
+                lat, lng = coords
 
                 outlet = {
                     'id': f"OUTLET_CASHATPOS_{idx}",
@@ -200,7 +209,8 @@ class ServiceFilteredDijkstra:
         except Exception as e:
             print(f"    ✗ Error: {e}")
 
-        # Calculate filter statistics
+    def _update_filter_stats(self, all_outlets):
+        """Record outlet totals and the service-filter percentage."""
         self.stats['total_outlets_available'] = len(all_outlets)
         self.stats['service_outlets_filtered'] = len(self.service_outlets)
 
@@ -210,13 +220,16 @@ class ServiceFilteredDijkstra:
                 self.stats['total_outlets_available'] * 100
             )
 
+    def _print_filter_report(self):
+        """Print the filtering results block."""
         print(f"\n📊 Filtering Results:")
         print(f"  Total outlets available: {self.stats['total_outlets_available']}")
         print(f"  Service-enabled outlets: {self.stats['service_outlets_filtered']}")
         print(f"  Filter percentage: {self.stats['filter_percentage']:.2f}%")
         print(f"  Reduction ratio: {self.stats['total_outlets_available'] / max(self.stats['service_outlets_filtered'], 1):.1f}:1")
 
-        # Add filtered outlets to graph
+    def _add_service_vertices(self):
+        """Add every service outlet to the graph and record the vertex count."""
         print(f"\n🔗 Adding service outlets to graph...")
         for outlet in self.service_outlets:
             services = {
@@ -329,115 +342,121 @@ class ServiceFilteredDijkstra:
         output_path = f"./api-data-integration/DIJKSTRA_SERVICE_OUTLETS_{self.timestamp}.xlsx"
 
         with pd.ExcelWriter(output_path, engine='openpyxl') as writer:
-            # Summary with filters
             print("  Writing SUMMARY sheet...")
-            summary = {
-                'Metric': [
-                    'Total Outlets Available',
-                    'Service-Enabled Outlets (Filtered)',
-                    'Filter Effectiveness',
-                    'Toll Plazas Analyzed',
-                    'Dijkstra Runs',
-                    'Service Paths Found',
-                    'Avg Distance to Service (km)',
-                    'Service Filter Type',
-                    'Services Included',
-                    'Bank Partner',
-                    'Graph Vertices',
-                    'Graph Edges (to service outlets)'
-                ],
-                'Value': [
-                    f"{self.stats['total_outlets_available']:,}",
-                    f"{self.stats['service_outlets_filtered']:,}",
-                    f"{self.stats['filter_percentage']:.2f}%",
-                    len(self.toll_plazas),
-                    self.stats['dijkstra_runs'],
-                    self.stats['shortest_paths_found'],
-                    f"{self.stats['avg_distance_to_service']:.2f}",
-                    'POS/ATM/Cash Dispensing',
-                    'ATM, Point of Sale, Cash withdrawal',
-                    'State Bank of India (SBI)',
-                    self.stats['graph_vertices'],
-                    self.stats['graph_edges']
-                ]
-            }
-            summary_df = pd.DataFrame(summary)
-            summary_df.to_excel(writer, sheet_name='SUMMARY', index=False)
+            self._service_summary_frame().to_excel(writer, sheet_name='SUMMARY', index=False)
 
-            # Toll to service outlet paths
             print("  Writing TOLL TO SERVICE OUTLETS sheet...")
-            toll_service_data = []
+            self._toll_service_frame().to_excel(writer, sheet_name='TOLL TO SERVICE OUTLETS', index=False)
 
-            for toll in self.toll_plazas[:100]:
-                if toll['id'] in self.results:
-                    result = self.results[toll['id']]
-                    toll_service_data.append({
-                        'Toll Plaza': toll['name'],
-                        'State': toll['state'],
-                        'Min Distance to Service (km)': round(result['min_service_distance'], 2),
-                        'Service Outlets Reachable': result['service_outlets_reachable'],
-                        'ATM Coverage': 'Yes (SBI)',
-                        'POS Available': 'Yes',
-                        'Cash Dispensing': 'Yes'
-                    })
-
-            service_df = pd.DataFrame(toll_service_data)
-            service_df.to_excel(writer, sheet_name='TOLL TO SERVICE OUTLETS', index=False)
-
-            # Service outlet details
             print("  Writing SERVICE OUTLET DIRECTORY sheet...")
-            outlet_data = []
+            self._outlet_directory_frame().to_excel(writer, sheet_name='SERVICE OUTLET DIRECTORY', index=False)
 
-            for outlet in self.service_outlets[:100]:
-                outlet_data.append({
-                    'Outlet Name': outlet['name'],
-                    'Service Type': outlet['type'],
-                    'Company': outlet['company'],
-                    'State': outlet.get('state', 'N/A'),
-                    'Has ATM': '✓' if outlet['has_atm'] else '✗',
-                    'Has POS': '✓' if outlet['has_pos'] else '✗',
-                    'Has Cash': '✓' if outlet['has_cash'] else '✗',
-                    'Bank Partner': outlet.get('bank_partner', 'SBI'),
-                    'Source': outlet['source']
-                })
-
-            outlets_df = pd.DataFrame(outlet_data)
-            outlets_df.to_excel(writer, sheet_name='SERVICE OUTLET DIRECTORY', index=False)
-
-            # Filter effectiveness analysis
             print("  Writing FILTER ANALYSIS sheet...")
-            filter_analysis = {
-                'Filter Component': [
-                    'ATM (Automatic Teller Machine)',
-                    'POS (Point of Sale)',
-                    'Cash Dispensing',
-                    'Bank Partner (SBI)',
-                    'Transaction Capability',
-                    'Service Completeness'
-                ],
-                'Status': [
-                    f"✓ {self.stats['service_outlets_filtered']} outlets",
-                    f"✓ {self.stats['service_outlets_filtered']} outlets",
-                    f"✓ {self.stats['service_outlets_filtered']} outlets",
-                    f"✓ All filtered outlets",
-                    f"✓ Full financial transaction support",
-                    f"✓ All 3 services required"
-                ],
-                'Use Case': [
-                    'Cash withdrawal for toll payment',
-                    'Digital/card transaction capability',
-                    'Direct cash access for travelers',
-                    'Banking infrastructure trust',
-                    'Flexible payment options',
-                    'Complete financial service availability'
-                ]
-            }
-            filter_df = pd.DataFrame(filter_analysis)
-            filter_df.to_excel(writer, sheet_name='FILTER ANALYSIS', index=False)
+            self._filter_analysis_frame().to_excel(writer, sheet_name='FILTER ANALYSIS', index=False)
 
         file_size = Path(output_path).stat().st_size / (1024*1024)
         print(f"  ✓ Excel created: {output_path} ({file_size:.2f}MB)")
         return output_path
+
+    def _service_summary_frame(self):
+        """Metric/value table of filter statistics and graph size."""
+        summary = {
+            'Metric': [
+                'Total Outlets Available',
+                'Service-Enabled Outlets (Filtered)',
+                'Filter Effectiveness',
+                'Toll Plazas Analyzed',
+                'Dijkstra Runs',
+                'Service Paths Found',
+                'Avg Distance to Service (km)',
+                'Service Filter Type',
+                'Services Included',
+                'Bank Partner',
+                'Graph Vertices',
+                'Graph Edges (to service outlets)'
+            ],
+            'Value': [
+                f"{self.stats['total_outlets_available']:,}",
+                f"{self.stats['service_outlets_filtered']:,}",
+                f"{self.stats['filter_percentage']:.2f}%",
+                len(self.toll_plazas),
+                self.stats['dijkstra_runs'],
+                self.stats['shortest_paths_found'],
+                f"{self.stats['avg_distance_to_service']:.2f}",
+                'POS/ATM/Cash Dispensing',
+                'ATM, Point of Sale, Cash withdrawal',
+                'State Bank of India (SBI)',
+                self.stats['graph_vertices'],
+                self.stats['graph_edges']
+            ]
+        }
+        return pd.DataFrame(summary)
+
+    def _toll_service_frame(self):
+        """Per-plaza nearest service outlet (first 100 plazas that have results)."""
+        toll_service_data = []
+
+        for toll in self.toll_plazas[:100]:
+            if toll['id'] in self.results:
+                result = self.results[toll['id']]
+                toll_service_data.append({
+                    'Toll Plaza': toll['name'],
+                    'State': toll['state'],
+                    'Min Distance to Service (km)': round(result['min_service_distance'], 2),
+                    'Service Outlets Reachable': result['service_outlets_reachable'],
+                    'ATM Coverage': 'Yes (SBI)',
+                    'POS Available': 'Yes',
+                    'Cash Dispensing': 'Yes'
+                })
+        return pd.DataFrame(toll_service_data)
+
+    def _outlet_directory_frame(self):
+        """Directory of the first 100 service-enabled outlets."""
+        outlet_data = []
+
+        for outlet in self.service_outlets[:100]:
+            outlet_data.append({
+                'Outlet Name': outlet['name'],
+                'Service Type': outlet['type'],
+                'Company': outlet['company'],
+                'State': outlet.get('state', 'N/A'),
+                'Has ATM': '✓' if outlet['has_atm'] else '✗',
+                'Has POS': '✓' if outlet['has_pos'] else '✗',
+                'Has Cash': '✓' if outlet['has_cash'] else '✗',
+                'Bank Partner': outlet.get('bank_partner', 'SBI'),
+                'Source': outlet['source']
+            })
+        return pd.DataFrame(outlet_data)
+
+    def _filter_analysis_frame(self):
+        """Static description of each filter component and its status."""
+        filter_analysis = {
+            'Filter Component': [
+                'ATM (Automatic Teller Machine)',
+                'POS (Point of Sale)',
+                'Cash Dispensing',
+                'Bank Partner (SBI)',
+                'Transaction Capability',
+                'Service Completeness'
+            ],
+            'Status': [
+                f"✓ {self.stats['service_outlets_filtered']} outlets",
+                f"✓ {self.stats['service_outlets_filtered']} outlets",
+                f"✓ {self.stats['service_outlets_filtered']} outlets",
+                f"✓ All filtered outlets",
+                f"✓ Full financial transaction support",
+                f"✓ All 3 services required"
+            ],
+            'Use Case': [
+                'Cash withdrawal for toll payment',
+                'Digital/card transaction capability',
+                'Direct cash access for travelers',
+                'Banking infrastructure trust',
+                'Flexible payment options',
+                'Complete financial service availability'
+            ]
+        }
+        return pd.DataFrame(filter_analysis)
 
     def print_summary(self):
         """Print analysis summary."""

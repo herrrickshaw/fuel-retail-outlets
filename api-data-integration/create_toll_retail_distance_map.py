@@ -13,11 +13,11 @@ Creates interactive map with:
 import pandas as pd
 import json
 import numpy as np
-import math
 from pathlib import Path
 from datetime import datetime
 from typing import Dict, List, Tuple
 from collections import defaultdict
+from geo import haversine_km_or_inf
 
 class TollRetailDistanceAnalyzer:
     """Analyzes distances between toll plazas and retail outlets."""
@@ -137,18 +137,7 @@ class TollRetailDistanceAnalyzer:
 
     def haversine_distance(self, lat1: float, lng1: float, lat2: float, lng2: float) -> float:
         """Calculate distance in km."""
-        try:
-            R = 6371
-            phi1 = math.radians(lat1)
-            phi2 = math.radians(lat2)
-            delta_phi = math.radians(lat2 - lat1)
-            delta_lambda = math.radians(lng2 - lng1)
-
-            a = math.sin(delta_phi/2)**2 + math.cos(phi1) * math.cos(phi2) * math.sin(delta_lambda/2)**2
-            c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
-            return R * c
-        except:
-            return float('inf')
+        return haversine_km_or_inf(lat1, lng1, lat2, lng2)
 
     def calculate_distances(self):
         """Calculate distances between all toll plazas and outlets."""
@@ -218,106 +207,112 @@ class TollRetailDistanceAnalyzer:
         print(f"\n💾 Exporting distance analysis to Excel...")
 
         with pd.ExcelWriter(output_path, engine='openpyxl') as writer:
-            # Summary sheet
             print("   Writing SUMMARY sheet...")
-            summary_data = {
-                'Metric': [
-                    'Toll Plazas',
-                    'Retail Outlets',
-                    'Total Distance Pairs',
-                    'Outlets within 1km',
-                    'Outlets within 5km',
-                    'Outlets within 10km',
-                    'Outlets within 25km',
-                    'Outlets within 50km',
-                    'Avg outlets per toll (1km)',
-                    'Avg outlets per toll (5km)',
-                    'Avg outlets per toll (10km)',
-                ],
-                'Value': [
-                    self.stats['toll_count'],
-                    self.stats['outlet_count'],
-                    f"{self.stats['total_distances']:,}",
-                    f"{self.stats['outlets_within_1km']:,}",
-                    f"{self.stats['outlets_within_5km']:,}",
-                    f"{self.stats['outlets_within_10km']:,}",
-                    f"{self.stats['outlets_within_25km']:,}",
-                    f"{self.stats['outlets_within_50km']:,}",
-                    round(self.stats['outlets_within_1km'] / max(self.stats['toll_count'], 1), 2),
-                    round(self.stats['outlets_within_5km'] / max(self.stats['toll_count'], 1), 2),
-                    round(self.stats['outlets_within_10km'] / max(self.stats['toll_count'], 1), 2),
-                ]
-            }
-            summary_df = pd.DataFrame(summary_data)
-            summary_df.to_excel(writer, sheet_name='SUMMARY', index=False)
+            self._summary_frame().to_excel(writer, sheet_name='SUMMARY', index=False)
 
-            # Distance analysis sheet
             print("   Writing DISTANCE ANALYSIS sheet...")
-            analysis_rows = []
-            for data in self.distance_matrix:
-                closest = data['closest_outlets'][0] if data['closest_outlets'] else {}
-                analysis_rows.append({
-                    'Toll Plaza': data['toll_name'],
-                    'Highway': data['highway'],
-                    'State': data['state'],
-                    'Closest Outlet': closest.get('outlet_name', 'N/A'),
-                    'Company': closest.get('company', ''),
-                    'Distance (km)': closest.get('distance', None),
-                    'City': closest.get('city', ''),
-                    'Has CNG': closest.get('has_cng', False),
-                    'Outlets 1km': data['outlets_1km'],
-                    'Outlets 5km': data['outlets_5km'],
-                    'Outlets 10km': data['outlets_10km'],
-                })
+            self._distance_analysis_frame().to_excel(writer, sheet_name='DISTANCE ANALYSIS', index=False)
 
-            analysis_df = pd.DataFrame(analysis_rows)
-            analysis_df.to_excel(writer, sheet_name='DISTANCE ANALYSIS', index=False)
-
-            # Top 20 underserved plazas
             print("   Writing UNDERSERVED PLAZAS sheet...")
-            underserved = sorted(self.distance_matrix, key=lambda x: x['min_distance'] or 999)[:20]
-            underserved_rows = []
-            for data in underserved:
-                closest = data['closest_outlets'][0] if data['closest_outlets'] else {}
-                underserved_rows.append({
-                    'Toll Plaza': data['toll_name'],
-                    'Closest Distance (km)': closest.get('distance', None),
-                    'Closest Outlet': closest.get('outlet_name', 'N/A'),
-                    'State': data['state'],
-                    'Outlets 5km': data['outlets_5km'],
-                    'Outlets 10km': data['outlets_10km'],
-                })
+            self._underserved_frame().to_excel(writer, sheet_name='UNDERSERVED PLAZAS', index=False)
 
-            underserved_df = pd.DataFrame(underserved_rows)
-            underserved_df.to_excel(writer, sheet_name='UNDERSERVED PLAZAS', index=False)
-
-            # State-wise analysis
             print("   Writing STATE ANALYSIS sheet...")
-            state_analysis = defaultdict(lambda: {'toll_count': 0, 'avg_distance': [], 'avg_5km': 0})
-            for data in self.distance_matrix:
-                state = data['state']
-                state_analysis[state]['toll_count'] += 1
-                if data['min_distance']:
-                    state_analysis[state]['avg_distance'].append(data['min_distance'])
-                state_analysis[state]['avg_5km'] += data['outlets_5km']
-
-            state_rows = []
-            for state, metrics in state_analysis.items():
-                avg_dist = np.mean(metrics['avg_distance']) if metrics['avg_distance'] else None
-                avg_5km = metrics['avg_5km'] / max(metrics['toll_count'], 1)
-                state_rows.append({
-                    'State': state,
-                    'Toll Plazas': metrics['toll_count'],
-                    'Avg Distance to Nearest Outlet (km)': round(avg_dist, 2) if avg_dist else 'N/A',
-                    'Avg Outlets within 5km': round(avg_5km, 1),
-                })
-
-            state_df = pd.DataFrame(state_rows).sort_values('Toll Plazas', ascending=False)
-            state_df.to_excel(writer, sheet_name='STATE ANALYSIS', index=False)
+            self._state_analysis_frame().to_excel(writer, sheet_name='STATE ANALYSIS', index=False)
 
         file_size = Path(output_path).stat().st_size / (1024*1024)
         print(f"  ✓ Excel created: {output_path} ({file_size:.2f}MB)")
         return output_path
+
+    def _summary_frame(self):
+        """Metric/value table of the headline coverage statistics."""
+        summary_data = {
+            'Metric': [
+                'Toll Plazas',
+                'Retail Outlets',
+                'Total Distance Pairs',
+                'Outlets within 1km',
+                'Outlets within 5km',
+                'Outlets within 10km',
+                'Outlets within 25km',
+                'Outlets within 50km',
+                'Avg outlets per toll (1km)',
+                'Avg outlets per toll (5km)',
+                'Avg outlets per toll (10km)',
+            ],
+            'Value': [
+                self.stats['toll_count'],
+                self.stats['outlet_count'],
+                f"{self.stats['total_distances']:,}",
+                f"{self.stats['outlets_within_1km']:,}",
+                f"{self.stats['outlets_within_5km']:,}",
+                f"{self.stats['outlets_within_10km']:,}",
+                f"{self.stats['outlets_within_25km']:,}",
+                f"{self.stats['outlets_within_50km']:,}",
+                round(self.stats['outlets_within_1km'] / max(self.stats['toll_count'], 1), 2),
+                round(self.stats['outlets_within_5km'] / max(self.stats['toll_count'], 1), 2),
+                round(self.stats['outlets_within_10km'] / max(self.stats['toll_count'], 1), 2),
+            ]
+        }
+        return pd.DataFrame(summary_data)
+
+    def _distance_analysis_frame(self):
+        """One row per toll plaza with its closest outlet and outlet counts per radius."""
+        analysis_rows = []
+        for data in self.distance_matrix:
+            closest = data['closest_outlets'][0] if data['closest_outlets'] else {}
+            analysis_rows.append({
+                'Toll Plaza': data['toll_name'],
+                'Highway': data['highway'],
+                'State': data['state'],
+                'Closest Outlet': closest.get('outlet_name', 'N/A'),
+                'Company': closest.get('company', ''),
+                'Distance (km)': closest.get('distance', None),
+                'City': closest.get('city', ''),
+                'Has CNG': closest.get('has_cng', False),
+                'Outlets 1km': data['outlets_1km'],
+                'Outlets 5km': data['outlets_5km'],
+                'Outlets 10km': data['outlets_10km'],
+            })
+        return pd.DataFrame(analysis_rows)
+
+    def _underserved_frame(self):
+        """The 20 plazas with the smallest minimum distance (sort key kept as in the original)."""
+        underserved = sorted(self.distance_matrix, key=lambda x: x['min_distance'] or 999)[:20]
+        underserved_rows = []
+        for data in underserved:
+            closest = data['closest_outlets'][0] if data['closest_outlets'] else {}
+            underserved_rows.append({
+                'Toll Plaza': data['toll_name'],
+                'Closest Distance (km)': closest.get('distance', None),
+                'Closest Outlet': closest.get('outlet_name', 'N/A'),
+                'State': data['state'],
+                'Outlets 5km': data['outlets_5km'],
+                'Outlets 10km': data['outlets_10km'],
+            })
+        return pd.DataFrame(underserved_rows)
+
+    def _state_analysis_frame(self):
+        """Per-state plaza count, mean nearest-outlet distance and mean outlets within 5km."""
+        state_analysis = defaultdict(lambda: {'toll_count': 0, 'avg_distance': [], 'avg_5km': 0})
+        for data in self.distance_matrix:
+            state = data['state']
+            state_analysis[state]['toll_count'] += 1
+            if data['min_distance']:
+                state_analysis[state]['avg_distance'].append(data['min_distance'])
+            state_analysis[state]['avg_5km'] += data['outlets_5km']
+
+        state_rows = []
+        for state, metrics in state_analysis.items():
+            avg_dist = np.mean(metrics['avg_distance']) if metrics['avg_distance'] else None
+            avg_5km = metrics['avg_5km'] / max(metrics['toll_count'], 1)
+            state_rows.append({
+                'State': state,
+                'Toll Plazas': metrics['toll_count'],
+                'Avg Distance to Nearest Outlet (km)': round(avg_dist, 2) if avg_dist else 'N/A',
+                'Avg Outlets within 5km': round(avg_5km, 1),
+            })
+
+        return pd.DataFrame(state_rows).sort_values('Toll Plazas', ascending=False)
 
     def create_html_map(self, output_path: str = None):
         """Create interactive HTML map with distances."""
@@ -326,7 +321,22 @@ class TollRetailDistanceAnalyzer:
 
         print(f"\n🗺️  Creating interactive distance map...")
 
-        html = f"""<!DOCTYPE html>
+        html = (
+            self._html_head() +
+            self._html_map_and_toll_markers() +
+            self._html_outlets_and_legend() +
+            self._html_stats()
+        )
+
+        with open(output_path, 'w') as f:
+            f.write(html)
+
+        print(f"  ✓ Map created: {output_path}")
+        return output_path
+
+    def _html_head(self) -> str:
+        """Return one fragment of the page markup."""
+        return f"""<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -379,7 +389,11 @@ class TollRetailDistanceAnalyzer:
             border-radius: 50%;
         }}
     </style>
-</head>
+"""
+
+    def _html_map_and_toll_markers(self) -> str:
+        """Return one fragment of the page markup."""
+        return f"""</head>
 <body>
     <div id="map"></div>
     <script>
@@ -427,7 +441,11 @@ class TollRetailDistanceAnalyzer:
             marker.addTo(map);
         }});
 
-        // Outlet markers (sampled for performance)
+"""
+
+    def _html_outlets_and_legend(self) -> str:
+        """Return one fragment of the page markup."""
+        return f"""        // Outlet markers (sampled for performance)
         outletData.forEach(outlet => {{
             const marker = L.circleMarker([outlet.lat, outlet.lng], {{
                 radius: 3, fillColor: '#558b2f', color: 'rgba(0,0,0,0.2)',
@@ -463,7 +481,11 @@ class TollRetailDistanceAnalyzer:
         }};
         legend.addTo(map);
 
-        // Statistics
+"""
+
+    def _html_stats(self) -> str:
+        """Return one fragment of the page markup."""
+        return f"""        // Statistics
         const stats = L.control({{ position: 'topright' }});
         stats.onAdd = function() {{
             const div = L.DomUtil.create('div', 'stats');
@@ -496,12 +518,6 @@ class TollRetailDistanceAnalyzer:
     </script>
 </body>
 </html>"""
-
-        with open(output_path, 'w') as f:
-            f.write(html)
-
-        print(f"  ✓ Map created: {output_path}")
-        return output_path
 
     def run(self):
         """Run complete analysis."""

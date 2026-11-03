@@ -186,14 +186,25 @@ class CompleteSSRIExtractor:
         pumps_list = list(self.all_pumps.values())
         df = pd.DataFrame(pumps_list)
 
-        # Export CSV
+        self._write_csv(df, output_dir)
+        self._write_json(pumps_list, output_dir)
+        self._write_geojson(pumps_list, output_dir)
+        self._write_js(pumps_list, output_dir)
+        summary = self._write_summary(pumps_list, output_dir)
+
+        print(f"\n✅ Export complete to {output_dir}/")
+        return summary
+
+    def _write_csv(self, df, output_dir):
+        """Write the full table as CSV."""
         print(f"\n  Exporting CSV...")
         csv_path = f"{output_dir}/ssri_complete_pumps_{self.timestamp}.csv"
         df.to_csv(csv_path, index=False)
         csv_size = Path(csv_path).stat().st_size / (1024*1024)
         print(f"    ✓ {csv_path} ({csv_size:.2f}MB, {len(df)} records)")
 
-        # Export JSON
+    def _write_json(self, pumps_list, output_dir):
+        """Write the records as compact JSON."""
         print(f"  Exporting JSON...")
         json_path = f"{output_dir}/ssri_complete_pumps_{self.timestamp}.json"
         with open(json_path, 'w') as f:
@@ -201,28 +212,33 @@ class CompleteSSRIExtractor:
         json_size = Path(json_path).stat().st_size / (1024*1024)
         print(f"    ✓ {json_path} ({json_size:.2f}MB)")
 
-        # Export GeoJSON
+    @staticmethod
+    def _pump_feature(pump):
+        """GeoJSON Point feature (longitude, latitude order) with price and timing properties."""
+        return {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [pump['longitude'], pump['latitude']]
+            },
+            "properties": {
+                "name": pump['name'],
+                "company": pump['company'],
+                "state": pump['state'],
+                "petrol_price": pump['petrol_price'],
+                "diesel_price": pump['diesel_price'],
+                "has_cng": pump['has_cng'],
+                "timing": pump['station_timing']
+            }
+        }
+
+    def _write_geojson(self, pumps_list, output_dir):
+        """Write a GeoJSON FeatureCollection of pumps that have coordinates."""
         print(f"  Exporting GeoJSON...")
         geojson = {"type": "FeatureCollection", "features": []}
         for pump in pumps_list:
             if pump['latitude'] and pump['longitude']:
-                feature = {
-                    "type": "Feature",
-                    "geometry": {
-                        "type": "Point",
-                        "coordinates": [pump['longitude'], pump['latitude']]
-                    },
-                    "properties": {
-                        "name": pump['name'],
-                        "company": pump['company'],
-                        "state": pump['state'],
-                        "petrol_price": pump['petrol_price'],
-                        "diesel_price": pump['diesel_price'],
-                        "has_cng": pump['has_cng'],
-                        "timing": pump['station_timing']
-                    }
-                }
-                geojson["features"].append(feature)
+                geojson["features"].append(self._pump_feature(pump))
 
         geojson_path = f"{output_dir}/ssri_complete_pumps_{self.timestamp}.geojson"
         with open(geojson_path, 'w') as f:
@@ -230,7 +246,18 @@ class CompleteSSRIExtractor:
         geojson_size = Path(geojson_path).stat().st_size / (1024*1024)
         print(f"    ✓ {geojson_path} ({geojson_size:.2f}MB, {len(geojson['features'])} features)")
 
-        # Export JavaScript
+    @staticmethod
+    def _headline_counts(pumps_list):
+        """Counts shared by the JS statistics block and the summary JSON."""
+        return {
+            'states': len(set(p['state'] for p in pumps_list if p['state'])),
+            'companies': len(set(p['company'] for p in pumps_list)),
+            'with_cng': sum(1 for p in pumps_list if p['has_cng']),
+            'with_prices': sum(1 for p in pumps_list if p['petrol_price']),
+        }
+
+    def _write_js(self, pumps_list, output_dir):
+        """Write a JavaScript data file (COMPLETE_FUEL_PUMP_DATABASE + PUMP_STATISTICS)."""
         print(f"  Exporting JavaScript...")
         js_path = f"{output_dir}/ssri_complete_pumps_{self.timestamp}.js"
         with open(js_path, 'w') as f:
@@ -240,27 +267,22 @@ class CompleteSSRIExtractor:
             f.write(f"const COMPLETE_FUEL_PUMP_DATABASE = {json.dumps(pumps_list)};\n\n")
 
             # Add statistics
-            stats = {
-                'total': len(pumps_list),
-                'states': len(set(p['state'] for p in pumps_list if p['state'])),
-                'companies': len(set(p['company'] for p in pumps_list)),
-                'with_cng': sum(1 for p in pumps_list if p['has_cng']),
-                'with_prices': sum(1 for p in pumps_list if p['petrol_price'])
-            }
+            stats = {'total': len(pumps_list), **self._headline_counts(pumps_list)}
             f.write(f"const PUMP_STATISTICS = {json.dumps(stats)};\n")
 
         js_size = Path(js_path).stat().st_size / (1024*1024)
         print(f"    ✓ {js_path} ({js_size:.2f}MB)")
 
-        # Export Summary
-        print(f"  Generating summary...")
-        summary = {
+    def _build_summary(self, pumps_list):
+        """Summary dict: headline counts, company/state distributions, fuel availability."""
+        counts = self._headline_counts(pumps_list)
+        return {
             'timestamp': self.timestamp,
             'total_unique_pumps': len(self.all_pumps),
-            'unique_states': len(set(p['state'] for p in pumps_list if p['state'])),
-            'unique_companies': len(set(p['company'] for p in pumps_list)),
-            'pumps_with_cng': sum(1 for p in pumps_list if p['has_cng']),
-            'pumps_with_prices': sum(1 for p in pumps_list if p['petrol_price']),
+            'unique_states': counts['states'],
+            'unique_companies': counts['companies'],
+            'pumps_with_cng': counts['with_cng'],
+            'pumps_with_prices': counts['with_prices'],
             'statistics': self.stats,
             'company_distribution': self._get_company_dist(pumps_list),
             'state_distribution': self._get_state_dist(pumps_list),
@@ -272,12 +294,14 @@ class CompleteSSRIExtractor:
             }
         }
 
+    def _write_summary(self, pumps_list, output_dir):
+        """Write the summary JSON and return the summary dict."""
+        print(f"  Generating summary...")
+        summary = self._build_summary(pumps_list)
         summary_path = f"{output_dir}/ssri_complete_summary_{self.timestamp}.json"
         with open(summary_path, 'w') as f:
             json.dump(summary, f, indent=2)
         print(f"    ✓ {summary_path}")
-
-        print(f"\n✅ Export complete to {output_dir}/")
         return summary
 
     def _get_company_dist(self, pumps_list):

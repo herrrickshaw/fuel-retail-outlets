@@ -178,7 +178,22 @@ class TollRetailMapGenerator:
         petrol_count = len([o for o in self.retail_outlets if o['type'] == 'Petrol Pump'])
         atm_count = len([o for o in self.retail_outlets if 'ATM' in o['type']])
 
-        html_content = f"""<!DOCTYPE html>
+        html_content = (
+            self._html_head() +
+            self._html_map_and_markers(center_lat, center_lng) +
+            self._html_layers_and_legend() +
+            self._html_stats_and_bounds(petrol_count, atm_count)
+        )
+
+        with open(output_path, 'w') as f:
+            f.write(html_content)
+
+        print(f"  ✓ Map created: {output_path}")
+        return output_path
+
+    def _html_head(self) -> str:
+        """Return one fragment of the page markup."""
+        return f"""<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -249,7 +264,11 @@ class TollRetailMapGenerator:
             border-left: 4px solid #558b2f;
         }}
     </style>
-</head>
+"""
+
+    def _html_map_and_markers(self, center_lat, center_lng) -> str:
+        """Return one fragment of the page markup."""
+        return f"""</head>
 <body>
     <div id="map"></div>
     <script>
@@ -321,7 +340,11 @@ class TollRetailMapGenerator:
             }}
         }});
 
-        // Add layers to map
+"""
+
+    def _html_layers_and_legend(self) -> str:
+        """Return one fragment of the page markup."""
+        return f"""        // Add layers to map
         tollLayer.addTo(map);
         outletLayer.addTo(map);
 
@@ -360,7 +383,11 @@ class TollRetailMapGenerator:
         }};
         legend.addTo(map);
 
-        // Add statistics panel
+"""
+
+    def _html_stats_and_bounds(self, petrol_count, atm_count) -> str:
+        """Return one fragment of the page markup."""
+        return f"""        // Add statistics panel
         const stats = L.control({{ position: 'topright' }});
         stats.onAdd = function(map) {{
             const div = L.DomUtil.create('div', 'stats');
@@ -396,12 +423,6 @@ class TollRetailMapGenerator:
     </script>
 </body>
 </html>"""
-
-        with open(output_path, 'w') as f:
-            f.write(html_content)
-
-        print(f"  ✓ Map created: {output_path}")
-        return output_path
 
     def run(self):
         """Run complete map generation."""

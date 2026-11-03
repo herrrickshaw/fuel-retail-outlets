@@ -98,7 +98,7 @@ class MultiSourceDatabaseIntegrator:
             c = 2 * math.asin(math.sqrt(a))
 
             return R * c
-        except:
+        except (TypeError, ValueError):  # missing (None/str) coordinates or out-of-domain math
             return float('inf')
 
     def find_nearby_pumps(self, pump, search_radius_km=0.5):

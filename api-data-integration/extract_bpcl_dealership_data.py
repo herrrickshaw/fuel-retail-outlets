@@ -156,7 +156,7 @@ class BPCLDealershipExtractor:
             text = ' '.join(text.split())
 
             return text if text else ''
-        except:
+        except (AttributeError, TypeError):  # cell is None or not a bs4 element
             return ''
 
     def extract_alternative_method(self, html_content):

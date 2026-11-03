@@ -298,7 +298,7 @@ class SSRIAPIExplorer:
                 response = requests.get(full_url, timeout=5)
                 status = "✓" if response.status_code == 200 else f"✗ ({response.status_code})"
                 print(f"  {status} {url}")
-            except:
+            except requests.RequestException:
                 print(f"  ✗ {url} (timeout)")
 
             time.sleep(0.2)
