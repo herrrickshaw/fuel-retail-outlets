@@ -31,7 +31,7 @@ class ProgressMonitor:
         try:
             with open(self.log_file, 'r') as f:
                 return f.read()
-        except:
+        except (OSError, UnicodeDecodeError):
             return ""
 
     def parse_log(self, log_content):

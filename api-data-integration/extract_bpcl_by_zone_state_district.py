@@ -232,7 +232,7 @@ class BPCLZoneStateDistrictExtractor:
             span = cell.find('span')
             text = span.get_text(strip=True) if span else cell.get_text(strip=True)
             return ' '.join(text.split()) if text else ''
-        except:
+        except (AttributeError, TypeError):  # cell is None or not a bs4 element
             return ''
 
     def add_dealership_with_dedup(self, dealership: dict) -> bool:
