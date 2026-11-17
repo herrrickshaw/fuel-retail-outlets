@@ -20,7 +20,7 @@ import numpy as np
 from pathlib import Path
 from datetime import datetime
 from typing import Dict, List, Tuple
-import math
+from geo import haversine_km_nonzero_or_inf
 
 class TollRetailIntegrator:
     """Integrates toll plazas with retail outlets database."""
@@ -159,20 +159,7 @@ class TollRetailIntegrator:
 
     def haversine_distance(self, lat1: float, lon1: float, lat2: float, lon2: float) -> float:
         """Calculate distance between two coordinates in kilometers."""
-        if not all([lat1, lon1, lat2, lon2]):
-            return float('inf')
-
-        R = 6371  # Earth radius in km
-
-        phi1 = math.radians(lat1)
-        phi2 = math.radians(lat2)
-        delta_phi = math.radians(lat2 - lat1)
-        delta_lambda = math.radians(lon2 - lon1)
-
-        a = math.sin(delta_phi/2)**2 + math.cos(phi1) * math.cos(phi2) * math.sin(delta_lambda/2)**2
-        c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
-
-        return R * c
+        return haversine_km_nonzero_or_inf(lat1, lon1, lat2, lon2)
 
     def find_nearby_outlets(self, toll_plaza: Dict, radius_km: float = 25.0) -> List[Dict]:
         """Find retail outlets within radius of toll plaza."""

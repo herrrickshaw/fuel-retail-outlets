@@ -1,0 +1,409 @@
+{
+ "complete_export": {
+  "files": {
+   "out/ssri_complete_pumps_20260101_000000.csv": "id,name,latitude,longitude,city,state,company,address,phone,petrol_price,diesel_price,has_cng,has_petrol,has_diesel,station_timing\n0,Pump 0,20.0,75.0,City 0,State 0,Co 0,Addr 0,0000,,90.0,False,True,True,24 hours\n1,Pump 1,21.0,76.0,City 1,State 1,Co 1,Addr 1,0001,100.5,90.0,True,True,False,24 hours\n2,Pump 2,0.0,77.0,City 0,State 2,Co 0,Addr 2,0002,,90.0,False,True,True,24 hours\n3,Pump 3,23.0,78.0,City 1,State 0,Co 1,Addr 3,0003,100.5,90.0,True,True,True,24 hours\n4,Pump 4,24.0,79.0,City 0,State 1,Co 0,Addr 4,0004,,90.0,False,True,True,24 hours\n",
+   "out/ssri_complete_pumps_20260101_000000.geojson": "{\"type\": \"FeatureCollection\", \"features\": [{\"type\": \"Feature\", \"geometry\": {\"type\": \"Point\", \"coordinates\": [75.0, 20.0]}, \"properties\": {\"name\": \"Pump 0\", \"company\": \"Co 0\", \"state\": \"State 0\", \"petrol_price\": null, \"diesel_price\": 90.0, \"has_cng\": false, \"timing\": \"24 hours\"}}, {\"type\": \"Feature\", \"geometry\": {\"type\": \"Point\", \"coordinates\": [76.0, 21.0]}, \"properties\": {\"name\": \"Pump 1\", \"company\": \"Co 1\", \"state\": \"State 1\", \"petrol_price\": 100.5, \"diesel_price\": 90.0, \"has_cng\": true, \"timing\": \"24 hours\"}}, {\"type\": \"Feature\", \"geometry\": {\"type\": \"Point\", \"coordinates\": [78.0, 23.0]}, \"properties\": {\"name\": \"Pump 3\", \"company\": \"Co 1\", \"state\": \"State 0\", \"petrol_price\": 100.5, \"diesel_price\": 90.0, \"has_cng\": true, \"timing\": \"24 hours\"}}, {\"type\": \"Feature\", \"geometry\": {\"type\": \"Point\", \"coordinates\": [79.0, 24.0]}, \"properties\": {\"name\": \"Pump 4\", \"company\": \"Co 0\", \"state\": \"State 1\", \"petrol_price\": null, \"diesel_price\": 90.0, \"has_cng\": false, \"timing\": \"24 hours\"}}]}",
+   "out/ssri_complete_pumps_20260101_000000.js": "// SSRI COMPLETE PETROL PUMPS DATABASE\n// Total: 5 records\n// Generated: 2026-01-01 00:00:00\n\nconst COMPLETE_FUEL_PUMP_DATABASE = [{\"id\": \"0\", \"name\": \"Pump 0\", \"latitude\": 20.0, \"longitude\": 75.0, \"city\": \"City 0\", \"state\": \"State 0\", \"company\": \"Co 0\", \"address\": \"Addr 0\", \"phone\": \"0000\", \"petrol_price\": null, \"diesel_price\": 90.0, \"has_cng\": false, \"has_petrol\": true, \"has_diesel\": true, \"station_timing\": \"24 hours\"}, {\"id\": \"1\", \"name\": \"Pump 1\", \"latitude\": 21.0, \"longitude\": 76.0, \"city\": \"City 1\", \"state\": \"State 1\", \"company\": \"Co 1\", \"address\": \"Addr 1\", \"phone\": \"0001\", \"petrol_price\": 100.5, \"diesel_price\": 90.0, \"has_cng\": true, \"has_petrol\": true, \"has_diesel\": false, \"station_timing\": \"24 hours\"}, {\"id\": \"2\", \"name\": \"Pump 2\", \"latitude\": 0, \"longitude\": 77.0, \"city\": \"City 0\", \"state\": \"State 2\", \"company\": \"Co 0\", \"address\": \"Addr 2\", \"phone\": \"0002\", \"petrol_price\": null, \"diesel_price\": 90.0, \"has_cng\": false, \"has_petrol\": true, \"has_diesel\": true, \"station_timing\": \"24 hours\"}, {\"id\": \"3\", \"name\": \"Pump 3\", \"latitude\": 23.0, \"longitude\": 78.0, \"city\": \"City 1\", \"state\": \"State 0\", \"company\": \"Co 1\", \"address\": \"Addr 3\", \"phone\": \"0003\", \"petrol_price\": 100.5, \"diesel_price\": 90.0, \"has_cng\": true, \"has_petrol\": true, \"has_diesel\": true, \"station_timing\": \"24 hours\"}, {\"id\": \"4\", \"name\": \"Pump 4\", \"latitude\": 24.0, \"longitude\": 79.0, \"city\": \"City 0\", \"state\": \"State 1\", \"company\": \"Co 0\", \"address\": \"Addr 4\", \"phone\": \"0004\", \"petrol_price\": null, \"diesel_price\": 90.0, \"has_cng\": false, \"has_petrol\": true, \"has_diesel\": true, \"station_timing\": \"24 hours\"}];\n\nconst PUMP_STATISTICS = {\"total\": 5, \"states\": 3, \"companies\": 2, \"with_cng\": 2, \"with_prices\": 2};\n",
+   "out/ssri_complete_pumps_20260101_000000.json": "[{\"id\": \"0\", \"name\": \"Pump 0\", \"latitude\": 20.0, \"longitude\": 75.0, \"city\": \"City 0\", \"state\": \"State 0\", \"company\": \"Co 0\", \"address\": \"Addr 0\", \"phone\": \"0000\", \"petrol_price\": null, \"diesel_price\": 90.0, \"has_cng\": false, \"has_petrol\": true, \"has_diesel\": true, \"station_timing\": \"24 hours\"}, {\"id\": \"1\", \"name\": \"Pump 1\", \"latitude\": 21.0, \"longitude\": 76.0, \"city\": \"City 1\", \"state\": \"State 1\", \"company\": \"Co 1\", \"address\": \"Addr 1\", \"phone\": \"0001\", \"petrol_price\": 100.5, \"diesel_price\": 90.0, \"has_cng\": true, \"has_petrol\": true, \"has_diesel\": false, \"station_timing\": \"24 hours\"}, {\"id\": \"2\", \"name\": \"Pump 2\", \"latitude\": 0, \"longitude\": 77.0, \"city\": \"City 0\", \"state\": \"State 2\", \"company\": \"Co 0\", \"address\": \"Addr 2\", \"phone\": \"0002\", \"petrol_price\": null, \"diesel_price\": 90.0, \"has_cng\": false, \"has_petrol\": true, \"has_diesel\": true, \"station_timing\": \"24 hours\"}, {\"id\": \"3\", \"name\": \"Pump 3\", \"latitude\": 23.0, \"longitude\": 78.0, \"city\": \"City 1\", \"state\": \"State 0\", \"company\": \"Co 1\", \"address\": \"Addr 3\", \"phone\": \"0003\", \"petrol_price\": 100.5, \"diesel_price\": 90.0, \"has_cng\": true, \"has_petrol\": true, \"has_diesel\": true, \"station_timing\": \"24 hours\"}, {\"id\": \"4\", \"name\": \"Pump 4\", \"latitude\": 24.0, \"longitude\": 79.0, \"city\": \"City 0\", \"state\": \"State 1\", \"company\": \"Co 0\", \"address\": \"Addr 4\", \"phone\": \"0004\", \"petrol_price\": null, \"diesel_price\": 90.0, \"has_cng\": false, \"has_petrol\": true, \"has_diesel\": true, \"station_timing\": \"24 hours\"}]",
+   "out/ssri_complete_summary_20260101_000000.json": "{\n  \"timestamp\": \"20260101_000000\",\n  \"total_unique_pumps\": 5,\n  \"unique_states\": 3,\n  \"unique_companies\": 2,\n  \"pumps_with_cng\": 2,\n  \"pumps_with_prices\": 2,\n  \"statistics\": {\n    \"total_pages\": 0,\n    \"records_fetched\": 0,\n    \"duplicates\": 0,\n    \"unique_records\": 0,\n    \"errors\": 0\n  },\n  \"company_distribution\": {\n    \"Co 0\": 3,\n    \"Co 1\": 2\n  },\n  \"state_distribution\": {\n    \"State 0\": 2,\n    \"State 1\": 2,\n    \"State 2\": 1\n  },\n  \"fuel_availability\": {\n    \"has_petrol\": 5,\n    \"has_diesel\": 4,\n    \"has_cng\": 2,\n    \"all_three\": 1\n  }\n}"
+  },
+  "ret": "{'timestamp': '20260101_000000', 'total_unique_pumps': 5, 'unique_states': 3, 'unique_companies': 2, 'pumps_with_cng': 2, 'pumps_with_prices': 2, 'statistics': {'total_pages': 0, 'records_fetched': 0, 'duplicates': 0, 'unique_records': 0, 'errors': 0}, 'company_distribution': {'Co 0': 3, 'Co 1': 2}, 'state_distribution': {'State 0': 2, 'State 1': 2, 'State 2': 1}, 'fuel_availability': {'has_petrol': 5, 'has_diesel': 4, 'has_cng': 2, 'all_three': 1}}",
+  "stdout": "\n================================================================================\n💾 EXPORTING COMPLETE SSRI DATABASE (107K+ RECORDS)\n================================================================================\n\n  Exporting CSV...\n    ✓ <TMP>/out/ssri_complete_pumps_20260101_000000.csv (0.00MB, 5 records)\n  Exporting JSON...\n    ✓ <TMP>/out/ssri_complete_pumps_20260101_000000.json (0.00MB)\n  Exporting GeoJSON...\n    ✓ <TMP>/out/ssri_complete_pumps_20260101_000000.geojson (0.00MB, 4 features)\n  Exporting JavaScript...\n    ✓ <TMP>/out/ssri_complete_pumps_20260101_000000.js (0.00MB)\n  Generating summary...\n    ✓ <TMP>/out/ssri_complete_summary_20260101_000000.json\n\n✅ Export complete to <TMP>/out/\n"
+ },
+ "distance_excel": {
+  "files": {
+   "api-data-integration/TOLL_RETAIL_DISTANCE_ANALYSIS_20260101_000000.xlsx": {
+    "DISTANCE ANALYSIS": [
+     [
+      "'Toll Plaza'",
+      "'Highway'",
+      "'State'",
+      "'Closest Outlet'",
+      "'Company'",
+      "'Distance (km)'",
+      "'City'",
+      "'Has CNG'",
+      "'Outlets 1km'",
+      "'Outlets 5km'",
+      "'Outlets 10km'"
+     ],
+     [
+      "'Plaza 0'",
+      "'NH0'",
+      "'State B'",
+      "'Outlet 1'",
+      "'Co X'",
+      "3.5",
+      "'City 1'",
+      "True",
+      "0",
+      "1",
+      "2"
+     ],
+     [
+      "'Plaza 1'",
+      "'NH1'",
+      "'State A'",
+      "'Outlet 1'",
+      "'Co X'",
+      "4.5",
+      "'City 1'",
+      "True",
+      "1",
+      "2",
+      "3"
+     ],
+     [
+      "'Plaza 2'",
+      "'NH2'",
+      "'State B'",
+      "'N/A'",
+      "None",
+      "None",
+      "None",
+      "False",
+      "2",
+      "3",
+      "4"
+     ]
+    ],
+    "STATE ANALYSIS": [
+     [
+      "'State'",
+      "'Toll Plazas'",
+      "'Avg Distance to Nearest Outlet (km)'",
+      "'Avg Outlets within 5km'"
+     ],
+     [
+      "'State B'",
+      "2",
+      "3.5",
+      "2"
+     ],
+     [
+      "'State A'",
+      "1",
+      "4.5",
+      "2"
+     ]
+    ],
+    "SUMMARY": [
+     [
+      "'Metric'",
+      "'Value'"
+     ],
+     [
+      "'Toll Plazas'",
+      "3"
+     ],
+     [
+      "'Retail Outlets'",
+      "4"
+     ],
+     [
+      "'Total Distance Pairs'",
+      "'12'"
+     ],
+     [
+      "'Outlets within 1km'",
+      "'1'"
+     ],
+     [
+      "'Outlets within 5km'",
+      "'5'"
+     ],
+     [
+      "'Outlets within 10km'",
+      "'9'"
+     ],
+     [
+      "'Outlets within 25km'",
+      "'11'"
+     ],
+     [
+      "'Outlets within 50km'",
+      "'12'"
+     ],
+     [
+      "'Avg outlets per toll (1km)'",
+      "0.33"
+     ],
+     [
+      "'Avg outlets per toll (5km)'",
+      "1.67"
+     ],
+     [
+      "'Avg outlets per toll (10km)'",
+      "3"
+     ]
+    ],
+    "UNDERSERVED PLAZAS": [
+     [
+      "'Toll Plaza'",
+      "'Closest Distance (km)'",
+      "'Closest Outlet'",
+      "'State'",
+      "'Outlets 5km'",
+      "'Outlets 10km'"
+     ],
+     [
+      "'Plaza 0'",
+      "3.5",
+      "'Outlet 1'",
+      "'State B'",
+      "1",
+      "2"
+     ],
+     [
+      "'Plaza 1'",
+      "4.5",
+      "'Outlet 1'",
+      "'State A'",
+      "2",
+      "3"
+     ],
+     [
+      "'Plaza 2'",
+      "None",
+      "'N/A'",
+      "'State B'",
+      "3",
+      "4"
+     ]
+    ]
+   },
+   "api-data-integration/toll_retail_distance_map_20260101_000000.html": "<!DOCTYPE html>\n<html>\n<head>\n    <meta charset=\"utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Toll Plaza + Retail Outlets Distance Analysis Map</title>\n    <link rel=\"stylesheet\" href=\"https://unpkg.com/leaflet@1.9.4/dist/leaflet.css\" />\n    <script src=\"https://unpkg.com/leaflet@1.9.4/dist/leaflet.js\"></script>\n    <style>\n        * { margin: 0; padding: 0; box-sizing: border-box; }\n        body { font: 14px/1.5 -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto; }\n        #map { position: absolute; top: 0; bottom: 0; width: 100%; }\n        .info {\n            padding: 8px 12px;\n            font: 13px Arial;\n            background: white;\n            background: rgba(255,255,255,0.95);\n            box-shadow: 0 0 15px rgba(0,0,0,0.2);\n            border-radius: 5px;\n            max-width: 300px;\n        }\n        .info h3 { margin: 0 0 8px; color: #333; font-size: 15px; font-weight: bold; }\n        .info p { margin: 3px 0; color: #666; font-size: 12px; }\n        .distance-badge {\n            display: inline-block;\n            background: #ff6b6b;\n            color: white;\n            padding: 2px 8px;\n            border-radius: 3px;\n            font-weight: bold;\n            font-size: 12px;\n        }\n        .distance-good { background: #51cf66; }\n        .distance-warning { background: #ffd43b; color: #333; }\n        .stats {\n            padding: 12px;\n            background: rgba(255,255,255,0.95);\n            border-radius: 5px;\n            box-shadow: 0 0 15px rgba(0,0,0,0.2);\n            font-size: 12px;\n        }\n        .stats h3 { margin: 0 0 10px; color: #333; font-size: 14px; font-weight: bold; }\n        .stat-row { padding: 4px 0; border-bottom: 1px solid #eee; }\n        .stat-row:last-child { border-bottom: none; }\n        .stat-label { color: #666; }\n        .stat-value { font-weight: bold; color: #2196F3; float: right; }\n        .legend { line-height: 18px; color: #555; }\n        .legend i {\n            width: 16px; height: 16px;\n            float: left; margin-right: 8px;\n            border-radius: 50%;\n        }\n    </style>\n</head>\n<body>\n    <div id=\"map\"></div>\n    <script>\n        const map = L.map('map').setView([23, 79], 5);\n\n        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {\n            attribution: '© OpenStreetMap',\n            maxZoom: 19\n        }).addTo(map);\n\n        const tollData = [{\"id\": \"T0\", \"name\": \"Plaza 0\", \"highway\": \"NH0\", \"state\": \"State B\", \"lat\": 20.0, \"lng\": 75.0}, {\"id\": \"T1\", \"name\": \"Plaza 1\", \"highway\": \"NH1\", \"state\": \"State A\", \"lat\": 21.0, \"lng\": 76.0}, {\"id\": \"T2\", \"name\": \"Plaza 2\", \"highway\": \"NH2\", \"state\": \"State B\", \"lat\": 22.0, \"lng\": 77.0}];\n        const outletData = [{\"id\": \"O0\", \"name\": \"Outlet 0\", \"type\": \"ATM Station\", \"company\": \"Co Y\", \"state\": \"State A\", \"city\": \"City 0\", \"lat\": 20.1, \"lng\": 75.1, \"has_cng\": false}, {\"id\": \"O1\", \"name\": \"Outlet 1\", \"type\": \"Petrol Pump\", \"company\": \"Co X\", \"state\": \"State A\", \"city\": \"City 1\", \"lat\": 21.1, \"lng\": 76.1, \"has_cng\": true}, {\"id\": \"O2\", \"name\": \"Outlet 2\", \"type\": \"ATM Station\", \"company\": \"Co Y\", \"state\": \"State A\", \"city\": \"City 2\", \"lat\": 22.1, \"lng\": 77.1, \"has_cng\": false}, {\"id\": \"O3\", \"name\": \"Outlet 3\", \"type\": \"Petrol Pump\", \"company\": \"Co X\", \"state\": \"State A\", \"city\": \"City 3\", \"lat\": 23.1, \"lng\": 78.1, \"has_cng\": true}];  // Limit for performance\n        const distanceData = [{\"toll_id\": \"T0\", \"toll_name\": \"Plaza 0\", \"highway\": \"NH0\", \"state\": \"State B\", \"closest_outlets\": [{\"outlet_name\": \"Outlet 1\", \"company\": \"Co X\", \"distance\": 3.5, \"city\": \"City 1\", \"has_cng\": true}], \"min_distance\": 3.5, \"outlets_1km\": 0, \"outlets_5km\": 1, \"outlets_10km\": 2}, {\"toll_id\": \"T1\", \"toll_name\": \"Plaza 1\", \"highway\": \"NH1\", \"state\": \"State A\", \"closest_outlets\": [{\"outlet_name\": \"Outlet 1\", \"company\": \"Co X\", \"distance\": 4.5, \"city\": \"City 1\", \"has_cng\": true}], \"min_distance\": 4.5, \"outlets_1km\": 1, \"outlets_5km\": 2, \"outlets_10km\": 3}, {\"toll_id\": \"T2\", \"toll_name\": \"Plaza 2\", \"highway\": \"NH2\", \"state\": \"State B\", \"closest_outlets\": [], \"min_distance\": null, \"outlets_1km\": 2, \"outlets_5km\": 3, \"outlets_10km\": 4}];\n\n        // Toll markers\n        tollData.forEach(toll => {\n            const marker = L.circleMarker([toll.lat, toll.lng], {\n                radius: 7, fillColor: '#1976d2', color: '#0d47a1',\n                weight: 2, opacity: 0.8, fillOpacity: 0.7\n            });\n\n            const distInfo = distanceData.find(d => d.toll_id === toll.id);\n            const closest = distInfo?.closest_outlets?.[0];\n\n            const popup = `\n                <div class=\"info\">\n                    <h3>🛣️ ${toll.name}</h3>\n                    <p><strong>Highway:</strong> ${toll.highway}</p>\n                    <p><strong>State:</strong> ${toll.state}</p>\n                    <p style=\"margin-top: 8px;\"><strong>Nearest Outlet:</strong></p>\n                    <p>${closest ? closest.outlet_name : 'N/A'}</p>\n                    <p><span class=\"distance-badge ${\n                        closest?.distance <= 5 ? 'distance-good' :\n                        closest?.distance <= 10 ? 'distance-warning' : ''\n                    }\">${closest?.distance ?? 'N/A'} km</span></p>\n                    <p style=\"margin-top: 6px;\">\n                        <strong>Service Zone:</strong><br>\n                        1km: ${distInfo?.outlets_1km || 0} |\n                        5km: ${distInfo?.outlets_5km || 0} |\n                        10km: ${distInfo?.outlets_10km || 0}\n                    </p>\n                </div>\n            `;\n            marker.bindPopup(popup);\n            marker.addTo(map);\n        });\n\n        // Outlet markers (sampled for performance)\n        outletData.forEach(outlet => {\n            const marker = L.circleMarker([outlet.lat, outlet.lng], {\n                radius: 3, fillColor: '#558b2f', color: 'rgba(0,0,0,0.2)',\n                weight: 0.5, opacity: 0.6, fillOpacity: 0.5\n            });\n\n            const popup = `\n                <div class=\"info\">\n                    <h3>⛽ ${outlet.name}</h3>\n                    <p><strong>Company:</strong> ${outlet.company}</p>\n                    <p><strong>City:</strong> ${outlet.city}</p>\n                    <p><strong>State:</strong> ${outlet.state}</p>\n                    ${outlet.has_cng ? '<p style=\"color: #d32f2f;\">✓ CNG Available</p>' : ''}\n                </div>\n            `;\n            marker.bindPopup(popup);\n            marker.addTo(map);\n        });\n\n        // Legend\n        const legend = L.control({ position: 'bottomleft' });\n        legend.onAdd = function() {\n            const div = L.DomUtil.create('div', 'info legend');\n            div.innerHTML = `\n                <h3>Legend</h3>\n                <p><i style=\"background: #1976d2;\"></i> Toll Plaza</p>\n                <p><i style=\"background: #558b2f;\"></i> Petrol Pump</p>\n                <p style=\"font-size: 11px; color: #999; margin-top: 8px;\">\n                    Green: ≤5km | Yellow: ≤10km | Red: >10km\n                </p>\n            `;\n            return div;\n        };\n        legend.addTo(map);\n\n        // Statistics\n        const stats = L.control({ position: 'topright' });\n        stats.onAdd = function() {\n            const div = L.DomUtil.create('div', 'stats');\n            div.innerHTML = `\n                <h3>📊 Network Statistics</h3>\n                <div class=\"stat-row\">\n                    <span class=\"stat-label\">Toll Plazas</span>\n                    <span class=\"stat-value\">3</span>\n                </div>\n                <div class=\"stat-row\">\n                    <span class=\"stat-label\">Retail Outlets</span>\n                    <span class=\"stat-value\">4</span>\n                </div>\n                <div class=\"stat-row\">\n                    <span class=\"stat-label\">Within 1km</span>\n                    <span class=\"stat-value\">1</span>\n                </div>\n                <div class=\"stat-row\">\n                    <span class=\"stat-label\">Within 5km</span>\n                    <span class=\"stat-value\">5</span>\n                </div>\n                <div class=\"stat-row\">\n                    <span class=\"stat-label\">Within 10km</span>\n                    <span class=\"stat-value\">9</span>\n                </div>\n            `;\n            return div;\n        };\n        stats.addTo(map);\n    </script>\n</body>\n</html>"
+  },
+  "ret": "'./api-data-integration/TOLL_RETAIL_DISTANCE_ANALYSIS_20260101_000000.xlsx'",
+  "stdout": "\n💾 Exporting distance analysis to Excel...\n   Writing SUMMARY sheet...\n   Writing DISTANCE ANALYSIS sheet...\n   Writing UNDERSERVED PLAZAS sheet...\n   Writing STATE ANALYSIS sheet...\n  ✓ Excel created: ./api-data-integration/TOLL_RETAIL_DISTANCE_ANALYSIS_20260101_000000.xlsx (0.01MB)\n"
+ },
+ "distance_map": {
+  "files": {
+   "api-data-integration/toll_retail_distance_map_20260101_000000.html": "<!DOCTYPE html>\n<html>\n<head>\n    <meta charset=\"utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Toll Plaza + Retail Outlets Distance Analysis Map</title>\n    <link rel=\"stylesheet\" href=\"https://unpkg.com/leaflet@1.9.4/dist/leaflet.css\" />\n    <script src=\"https://unpkg.com/leaflet@1.9.4/dist/leaflet.js\"></script>\n    <style>\n        * { margin: 0; padding: 0; box-sizing: border-box; }\n        body { font: 14px/1.5 -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto; }\n        #map { position: absolute; top: 0; bottom: 0; width: 100%; }\n        .info {\n            padding: 8px 12px;\n            font: 13px Arial;\n            background: white;\n            background: rgba(255,255,255,0.95);\n            box-shadow: 0 0 15px rgba(0,0,0,0.2);\n            border-radius: 5px;\n            max-width: 300px;\n        }\n        .info h3 { margin: 0 0 8px; color: #333; font-size: 15px; font-weight: bold; }\n        .info p { margin: 3px 0; color: #666; font-size: 12px; }\n        .distance-badge {\n            display: inline-block;\n            background: #ff6b6b;\n            color: white;\n            padding: 2px 8px;\n            border-radius: 3px;\n            font-weight: bold;\n            font-size: 12px;\n        }\n        .distance-good { background: #51cf66; }\n        .distance-warning { background: #ffd43b; color: #333; }\n        .stats {\n            padding: 12px;\n            background: rgba(255,255,255,0.95);\n            border-radius: 5px;\n            box-shadow: 0 0 15px rgba(0,0,0,0.2);\n            font-size: 12px;\n        }\n        .stats h3 { margin: 0 0 10px; color: #333; font-size: 14px; font-weight: bold; }\n        .stat-row { padding: 4px 0; border-bottom: 1px solid #eee; }\n        .stat-row:last-child { border-bottom: none; }\n        .stat-label { color: #666; }\n        .stat-value { font-weight: bold; color: #2196F3; float: right; }\n        .legend { line-height: 18px; color: #555; }\n        .legend i {\n            width: 16px; height: 16px;\n            float: left; margin-right: 8px;\n            border-radius: 50%;\n        }\n    </style>\n</head>\n<body>\n    <div id=\"map\"></div>\n    <script>\n        const map = L.map('map').setView([23, 79], 5);\n\n        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {\n            attribution: '© OpenStreetMap',\n            maxZoom: 19\n        }).addTo(map);\n\n        const tollData = [{\"id\": \"T0\", \"name\": \"Plaza 0\", \"highway\": \"NH0\", \"state\": \"State B\", \"lat\": 20.0, \"lng\": 75.0}, {\"id\": \"T1\", \"name\": \"Plaza 1\", \"highway\": \"NH1\", \"state\": \"State A\", \"lat\": 21.0, \"lng\": 76.0}, {\"id\": \"T2\", \"name\": \"Plaza 2\", \"highway\": \"NH2\", \"state\": \"State B\", \"lat\": 22.0, \"lng\": 77.0}];\n        const outletData = [{\"id\": \"O0\", \"name\": \"Outlet 0\", \"type\": \"ATM Station\", \"company\": \"Co Y\", \"state\": \"State A\", \"city\": \"City 0\", \"lat\": 20.1, \"lng\": 75.1, \"has_cng\": false}, {\"id\": \"O1\", \"name\": \"Outlet 1\", \"type\": \"Petrol Pump\", \"company\": \"Co X\", \"state\": \"State A\", \"city\": \"City 1\", \"lat\": 21.1, \"lng\": 76.1, \"has_cng\": true}, {\"id\": \"O2\", \"name\": \"Outlet 2\", \"type\": \"ATM Station\", \"company\": \"Co Y\", \"state\": \"State A\", \"city\": \"City 2\", \"lat\": 22.1, \"lng\": 77.1, \"has_cng\": false}, {\"id\": \"O3\", \"name\": \"Outlet 3\", \"type\": \"Petrol Pump\", \"company\": \"Co X\", \"state\": \"State A\", \"city\": \"City 3\", \"lat\": 23.1, \"lng\": 78.1, \"has_cng\": true}];  // Limit for performance\n        const distanceData = [{\"toll_id\": \"T0\", \"toll_name\": \"Plaza 0\", \"highway\": \"NH0\", \"state\": \"State B\", \"closest_outlets\": [{\"outlet_name\": \"Outlet 1\", \"company\": \"Co X\", \"distance\": 3.5, \"city\": \"City 1\", \"has_cng\": true}], \"min_distance\": 3.5, \"outlets_1km\": 0, \"outlets_5km\": 1, \"outlets_10km\": 2}, {\"toll_id\": \"T1\", \"toll_name\": \"Plaza 1\", \"highway\": \"NH1\", \"state\": \"State A\", \"closest_outlets\": [{\"outlet_name\": \"Outlet 1\", \"company\": \"Co X\", \"distance\": 4.5, \"city\": \"City 1\", \"has_cng\": true}], \"min_distance\": 4.5, \"outlets_1km\": 1, \"outlets_5km\": 2, \"outlets_10km\": 3}, {\"toll_id\": \"T2\", \"toll_name\": \"Plaza 2\", \"highway\": \"NH2\", \"state\": \"State B\", \"closest_outlets\": [], \"min_distance\": null, \"outlets_1km\": 2, \"outlets_5km\": 3, \"outlets_10km\": 4}];\n\n        // Toll markers\n        tollData.forEach(toll => {\n            const marker = L.circleMarker([toll.lat, toll.lng], {\n                radius: 7, fillColor: '#1976d2', color: '#0d47a1',\n                weight: 2, opacity: 0.8, fillOpacity: 0.7\n            });\n\n            const distInfo = distanceData.find(d => d.toll_id === toll.id);\n            const closest = distInfo?.closest_outlets?.[0];\n\n            const popup = `\n                <div class=\"info\">\n                    <h3>🛣️ ${toll.name}</h3>\n                    <p><strong>Highway:</strong> ${toll.highway}</p>\n                    <p><strong>State:</strong> ${toll.state}</p>\n                    <p style=\"margin-top: 8px;\"><strong>Nearest Outlet:</strong></p>\n                    <p>${closest ? closest.outlet_name : 'N/A'}</p>\n                    <p><span class=\"distance-badge ${\n                        closest?.distance <= 5 ? 'distance-good' :\n                        closest?.distance <= 10 ? 'distance-warning' : ''\n                    }\">${closest?.distance ?? 'N/A'} km</span></p>\n                    <p style=\"margin-top: 6px;\">\n                        <strong>Service Zone:</strong><br>\n                        1km: ${distInfo?.outlets_1km || 0} |\n                        5km: ${distInfo?.outlets_5km || 0} |\n                        10km: ${distInfo?.outlets_10km || 0}\n                    </p>\n                </div>\n            `;\n            marker.bindPopup(popup);\n            marker.addTo(map);\n        });\n\n        // Outlet markers (sampled for performance)\n        outletData.forEach(outlet => {\n            const marker = L.circleMarker([outlet.lat, outlet.lng], {\n                radius: 3, fillColor: '#558b2f', color: 'rgba(0,0,0,0.2)',\n                weight: 0.5, opacity: 0.6, fillOpacity: 0.5\n            });\n\n            const popup = `\n                <div class=\"info\">\n                    <h3>⛽ ${outlet.name}</h3>\n                    <p><strong>Company:</strong> ${outlet.company}</p>\n                    <p><strong>City:</strong> ${outlet.city}</p>\n                    <p><strong>State:</strong> ${outlet.state}</p>\n                    ${outlet.has_cng ? '<p style=\"color: #d32f2f;\">✓ CNG Available</p>' : ''}\n                </div>\n            `;\n            marker.bindPopup(popup);\n            marker.addTo(map);\n        });\n\n        // Legend\n        const legend = L.control({ position: 'bottomleft' });\n        legend.onAdd = function() {\n            const div = L.DomUtil.create('div', 'info legend');\n            div.innerHTML = `\n                <h3>Legend</h3>\n                <p><i style=\"background: #1976d2;\"></i> Toll Plaza</p>\n                <p><i style=\"background: #558b2f;\"></i> Petrol Pump</p>\n                <p style=\"font-size: 11px; color: #999; margin-top: 8px;\">\n                    Green: ≤5km | Yellow: ≤10km | Red: >10km\n                </p>\n            `;\n            return div;\n        };\n        legend.addTo(map);\n\n        // Statistics\n        const stats = L.control({ position: 'topright' });\n        stats.onAdd = function() {\n            const div = L.DomUtil.create('div', 'stats');\n            div.innerHTML = `\n                <h3>📊 Network Statistics</h3>\n                <div class=\"stat-row\">\n                    <span class=\"stat-label\">Toll Plazas</span>\n                    <span class=\"stat-value\">3</span>\n                </div>\n                <div class=\"stat-row\">\n                    <span class=\"stat-label\">Retail Outlets</span>\n                    <span class=\"stat-value\">4</span>\n                </div>\n                <div class=\"stat-row\">\n                    <span class=\"stat-label\">Within 1km</span>\n                    <span class=\"stat-value\">1</span>\n                </div>\n                <div class=\"stat-row\">\n                    <span class=\"stat-label\">Within 5km</span>\n                    <span class=\"stat-value\">5</span>\n                </div>\n                <div class=\"stat-row\">\n                    <span class=\"stat-label\">Within 10km</span>\n                    <span class=\"stat-value\">9</span>\n                </div>\n            `;\n            return div;\n        };\n        stats.addTo(map);\n    </script>\n</body>\n</html>"
+  },
+  "ret": "'./api-data-integration/toll_retail_distance_map_20260101_000000.html'",
+  "stdout": "\n🗺️  Creating interactive distance map...\n  ✓ Map created: ./api-data-integration/toll_retail_distance_map_20260101_000000.html\n"
+ },
+ "hybrid_export": {
+  "files": {
+   "out/hybrid_outlets_20260101_000000.csv": "name,latitude,longitude,company,source,city,state\nPump 0,20.0,75.0,Co 0,ppac,City 0,State 0\nPump 1,21.0,76.0,Co 1,ppac,City 1,State 1\nPump 2,,77.0,Co 0,ppac,City 0,State 2\nPump 3,23.0,78.0,Co 1,ppac,City 1,State 0\nPump 4,24.0,79.0,Co 0,ppac,City 0,State 1\n",
+   "out/hybrid_outlets_20260101_000000.geojson": "{\n  \"type\": \"FeatureCollection\",\n  \"features\": [\n    {\n      \"type\": \"Feature\",\n      \"geometry\": {\n        \"type\": \"Point\",\n        \"coordinates\": [\n          75.0,\n          20.0\n        ]\n      },\n      \"properties\": {\n        \"name\": \"Pump 0\",\n        \"company\": \"Co 0\",\n        \"source\": \"ppac\",\n        \"city\": \"City 0\",\n        \"state\": \"State 0\"\n      }\n    },\n    {\n      \"type\": \"Feature\",\n      \"geometry\": {\n        \"type\": \"Point\",\n        \"coordinates\": [\n          76.0,\n          21.0\n        ]\n      },\n      \"properties\": {\n        \"name\": \"Pump 1\",\n        \"company\": \"Co 1\",\n        \"source\": \"ppac\",\n        \"city\": \"City 1\",\n        \"state\": \"State 1\"\n      }\n    },\n    {\n      \"type\": \"Feature\",\n      \"geometry\": {\n        \"type\": \"Point\",\n        \"coordinates\": [\n          78.0,\n          23.0\n        ]\n      },\n      \"properties\": {\n        \"name\": \"Pump 3\",\n        \"company\": \"Co 1\",\n        \"source\": \"ppac\",\n        \"city\": \"City 1\",\n        \"state\": \"State 0\"\n      }\n    },\n    {\n      \"type\": \"Feature\",\n      \"geometry\": {\n        \"type\": \"Point\",\n        \"coordinates\": [\n          79.0,\n          24.0\n        ]\n      },\n      \"properties\": {\n        \"name\": \"Pump 4\",\n        \"company\": \"Co 0\",\n        \"source\": \"ppac\",\n        \"city\": \"City 0\",\n        \"state\": \"State 1\"\n      }\n    }\n  ]\n}",
+   "out/hybrid_outlets_20260101_000000.js": "\n// Hybrid Retail Outlet Database\n// Generated: 2026-01-01 00:00:00\n// Source: PPAC (Official) + OpenStreetMap + Google Maps\n\nconst HYBRID_OUTLETS = [{\"name\": \"Pump 0\", \"latitude\": 20.0, \"longitude\": 75.0, \"company\": \"Co 0\", \"source\": \"ppac\", \"city\": \"City 0\", \"state\": \"State 0\"}, {\"name\": \"Pump 1\", \"latitude\": 21.0, \"longitude\": 76.0, \"company\": \"Co 1\", \"source\": \"ppac\", \"city\": \"City 1\", \"state\": \"State 1\"}, {\"name\": \"Pump 2\", \"latitude\": null, \"longitude\": 77.0, \"company\": \"Co 0\", \"source\": \"ppac\", \"city\": \"City 0\", \"state\": \"State 2\"}, {\"name\": \"Pump 3\", \"latitude\": 23.0, \"longitude\": 78.0, \"company\": \"Co 1\", \"source\": \"ppac\", \"city\": \"City 1\", \"state\": \"State 0\"}, {\"name\": \"Pump 4\", \"latitude\": 24.0, \"longitude\": 79.0, \"company\": \"Co 0\", \"source\": \"ppac\", \"city\": \"City 0\", \"state\": \"State 1\"}];\n\nconst OUTLET_STATS = {\n    total: 5,\n    ppac: 2,\n    osm: 2,\n    google: 1,\n    duplicates_removed: 1\n};\n",
+   "out/hybrid_outlets_20260101_000000.json": "[\n  {\n    \"name\": \"Pump 0\",\n    \"latitude\": 20.0,\n    \"longitude\": 75.0,\n    \"company\": \"Co 0\",\n    \"source\": \"ppac\",\n    \"city\": \"City 0\",\n    \"state\": \"State 0\"\n  },\n  {\n    \"name\": \"Pump 1\",\n    \"latitude\": 21.0,\n    \"longitude\": 76.0,\n    \"company\": \"Co 1\",\n    \"source\": \"ppac\",\n    \"city\": \"City 1\",\n    \"state\": \"State 1\"\n  },\n  {\n    \"name\": \"Pump 2\",\n    \"latitude\": null,\n    \"longitude\": 77.0,\n    \"company\": \"Co 0\",\n    \"source\": \"ppac\",\n    \"city\": \"City 0\",\n    \"state\": \"State 2\"\n  },\n  {\n    \"name\": \"Pump 3\",\n    \"latitude\": 23.0,\n    \"longitude\": 78.0,\n    \"company\": \"Co 1\",\n    \"source\": \"ppac\",\n    \"city\": \"City 1\",\n    \"state\": \"State 0\"\n  },\n  {\n    \"name\": \"Pump 4\",\n    \"latitude\": 24.0,\n    \"longitude\": 79.0,\n    \"company\": \"Co 0\",\n    \"source\": \"ppac\",\n    \"city\": \"City 0\",\n    \"state\": \"State 1\"\n  }\n]",
+   "out/hybrid_outlets_stats_20260101_000000.json": "{\n  \"aggregation_timestamp\": \"20260101_000000\",\n  \"total_outlets\": 5,\n  \"with_coordinates\": 4,\n  \"cities\": 2,\n  \"states\": 3,\n  \"companies\": 2,\n  \"sources\": {\n    \"ppac\": 2,\n    \"osm\": 2,\n    \"google\": 1,\n    \"duplicates_removed\": 1\n  }\n}"
+  },
+  "ret": "'<TMP>/out'",
+  "stdout": "\n💾 Exporting data...\n  ✓ CSV: <TMP>/out/hybrid_outlets_20260101_000000.csv\n  ✓ GeoJSON: <TMP>/out/hybrid_outlets_20260101_000000.geojson (4 features)\n  ✓ JSON: <TMP>/out/hybrid_outlets_20260101_000000.json\n  ✓ JavaScript: <TMP>/out/hybrid_outlets_20260101_000000.js\n  ✓ Statistics: <TMP>/out/hybrid_outlets_stats_20260101_000000.json\n\n✅ Export complete: <TMP>/out/\n"
+ },
+ "pumps_export": {
+  "files": {
+   "out/ssri_all_pumps_20260101_000000.csv": "id,name,latitude,longitude,city,state,company,address,phone,petrol_price,diesel_price,has_cng,has_petrol,has_diesel,station_timing\n0,Pump 0,20.0,75.0,City 0,State 0,Co 0,Addr 0,0000,,90.0,False,True,True,24 hours\n1,Pump 1,21.0,76.0,City 1,State 1,Co 1,Addr 1,0001,100.5,90.0,True,True,False,24 hours\n2,Pump 2,0.0,77.0,City 0,State 2,Co 0,Addr 2,0002,,90.0,False,True,True,24 hours\n3,Pump 3,23.0,78.0,City 1,State 0,Co 1,Addr 3,0003,100.5,90.0,True,True,True,24 hours\n4,Pump 4,24.0,79.0,City 0,State 1,Co 0,Addr 4,0004,,90.0,False,True,True,24 hours\n",
+   "out/ssri_all_pumps_20260101_000000.geojson": "{\"type\": \"FeatureCollection\", \"features\": [{\"type\": \"Feature\", \"geometry\": {\"type\": \"Point\", \"coordinates\": [75.0, 20.0]}, \"properties\": {\"name\": \"Pump 0\", \"company\": \"Co 0\", \"city\": \"City 0\", \"state\": \"State 0\", \"address\": \"Addr 0\"}}, {\"type\": \"Feature\", \"geometry\": {\"type\": \"Point\", \"coordinates\": [76.0, 21.0]}, \"properties\": {\"name\": \"Pump 1\", \"company\": \"Co 1\", \"city\": \"City 1\", \"state\": \"State 1\", \"address\": \"Addr 1\"}}, {\"type\": \"Feature\", \"geometry\": {\"type\": \"Point\", \"coordinates\": [78.0, 23.0]}, \"properties\": {\"name\": \"Pump 3\", \"company\": \"Co 1\", \"city\": \"City 1\", \"state\": \"State 0\", \"address\": \"Addr 3\"}}, {\"type\": \"Feature\", \"geometry\": {\"type\": \"Point\", \"coordinates\": [79.0, 24.0]}, \"properties\": {\"name\": \"Pump 4\", \"company\": \"Co 0\", \"city\": \"City 0\", \"state\": \"State 1\", \"address\": \"Addr 4\"}}]}",
+   "out/ssri_all_pumps_20260101_000000.js": "// SSRI Complete Petrol Pumps Database\n// Generated: 2026-01-01 00:00:00\n// Total pumps: 5\n\nconst FUEL_PUMP_LOCATIONS = [{\"id\": \"0\", \"name\": \"Pump 0\", \"latitude\": 20.0, \"longitude\": 75.0, \"city\": \"City 0\", \"state\": \"State 0\", \"company\": \"Co 0\", \"address\": \"Addr 0\", \"phone\": \"0000\", \"petrol_price\": null, \"diesel_price\": 90.0, \"has_cng\": false, \"has_petrol\": true, \"has_diesel\": true, \"station_timing\": \"24 hours\"}, {\"id\": \"1\", \"name\": \"Pump 1\", \"latitude\": 21.0, \"longitude\": 76.0, \"city\": \"City 1\", \"state\": \"State 1\", \"company\": \"Co 1\", \"address\": \"Addr 1\", \"phone\": \"0001\", \"petrol_price\": 100.5, \"diesel_price\": 90.0, \"has_cng\": true, \"has_petrol\": true, \"has_diesel\": false, \"station_timing\": \"24 hours\"}, {\"id\": \"2\", \"name\": \"Pump 2\", \"latitude\": 0, \"longitude\": 77.0, \"city\": \"City 0\", \"state\": \"State 2\", \"company\": \"Co 0\", \"address\": \"Addr 2\", \"phone\": \"0002\", \"petrol_price\": null, \"diesel_price\": 90.0, \"has_cng\": false, \"has_petrol\": true, \"has_diesel\": true, \"station_timing\": \"24 hours\"}, {\"id\": \"3\", \"name\": \"Pump 3\", \"latitude\": 23.0, \"longitude\": 78.0, \"city\": \"City 1\", \"state\": \"State 0\", \"company\": \"Co 1\", \"address\": \"Addr 3\", \"phone\": \"0003\", \"petrol_price\": 100.5, \"diesel_price\": 90.0, \"has_cng\": true, \"has_petrol\": true, \"has_diesel\": true, \"station_timing\": \"24 hours\"}, {\"id\": \"4\", \"name\": \"Pump 4\", \"latitude\": 24.0, \"longitude\": 79.0, \"city\": \"City 0\", \"state\": \"State 1\", \"company\": \"Co 0\", \"address\": \"Addr 4\", \"phone\": \"0004\", \"petrol_price\": null, \"diesel_price\": 90.0, \"has_cng\": false, \"has_petrol\": true, \"has_diesel\": true, \"station_timing\": \"24 hours\"}];\n\nconst OUTLET_STATS = {\n  total: 5,\n  states: 3,\n  cities: 2,\n  companies: 2,\n  source: 'SSRI Petrol Pumps API (Complete)'\n};\n",
+   "out/ssri_all_pumps_20260101_000000.json": "[\n  {\n    \"id\": \"0\",\n    \"name\": \"Pump 0\",\n    \"latitude\": 20.0,\n    \"longitude\": 75.0,\n    \"city\": \"City 0\",\n    \"state\": \"State 0\",\n    \"company\": \"Co 0\",\n    \"address\": \"Addr 0\",\n    \"phone\": \"0000\",\n    \"petrol_price\": null,\n    \"diesel_price\": 90.0,\n    \"has_cng\": false,\n    \"has_petrol\": true,\n    \"has_diesel\": true,\n    \"station_timing\": \"24 hours\"\n  },\n  {\n    \"id\": \"1\",\n    \"name\": \"Pump 1\",\n    \"latitude\": 21.0,\n    \"longitude\": 76.0,\n    \"city\": \"City 1\",\n    \"state\": \"State 1\",\n    \"company\": \"Co 1\",\n    \"address\": \"Addr 1\",\n    \"phone\": \"0001\",\n    \"petrol_price\": 100.5,\n    \"diesel_price\": 90.0,\n    \"has_cng\": true,\n    \"has_petrol\": true,\n    \"has_diesel\": false,\n    \"station_timing\": \"24 hours\"\n  },\n  {\n    \"id\": \"2\",\n    \"name\": \"Pump 2\",\n    \"latitude\": 0,\n    \"longitude\": 77.0,\n    \"city\": \"City 0\",\n    \"state\": \"State 2\",\n    \"company\": \"Co 0\",\n    \"address\": \"Addr 2\",\n    \"phone\": \"0002\",\n    \"petrol_price\": null,\n    \"diesel_price\": 90.0,\n    \"has_cng\": false,\n    \"has_petrol\": true,\n    \"has_diesel\": true,\n    \"station_timing\": \"24 hours\"\n  },\n  {\n    \"id\": \"3\",\n    \"name\": \"Pump 3\",\n    \"latitude\": 23.0,\n    \"longitude\": 78.0,\n    \"city\": \"City 1\",\n    \"state\": \"State 0\",\n    \"company\": \"Co 1\",\n    \"address\": \"Addr 3\",\n    \"phone\": \"0003\",\n    \"petrol_price\": 100.5,\n    \"diesel_price\": 90.0,\n    \"has_cng\": true,\n    \"has_petrol\": true,\n    \"has_diesel\": true,\n    \"station_timing\": \"24 hours\"\n  },\n  {\n    \"id\": \"4\",\n    \"name\": \"Pump 4\",\n    \"latitude\": 24.0,\n    \"longitude\": 79.0,\n    \"city\": \"City 0\",\n    \"state\": \"State 1\",\n    \"company\": \"Co 0\",\n    \"address\": \"Addr 4\",\n    \"phone\": \"0004\",\n    \"petrol_price\": null,\n    \"diesel_price\": 90.0,\n    \"has_cng\": false,\n    \"has_petrol\": true,\n    \"has_diesel\": true,\n    \"station_timing\": \"24 hours\"\n  }\n]",
+   "out/ssri_all_pumps_summary_20260101_000000.json": "{\n  \"timestamp\": \"20260101_000000\",\n  \"total_pumps\": 5,\n  \"unique_states\": 3,\n  \"unique_cities\": 2,\n  \"unique_companies\": 2,\n  \"states\": {\n    \"State 0\": 2,\n    \"State 1\": 2,\n    \"State 2\": 1\n  },\n  \"companies\": {\n    \"Co 0\": 3,\n    \"Co 1\": 2\n  },\n  \"extraction_stats\": {\n    \"pagination\": 0,\n    \"companies\": 0,\n    \"cities\": 0,\n    \"nearby\": 0,\n    \"duplicates_found\": 0,\n    \"total_unique\": 0\n  }\n}"
+  },
+  "ret": "('<TMP>/out', {'timestamp': '20260101_000000', 'total_pumps': 5, 'unique_states': 3, 'unique_cities': 2, 'unique_companies': 2, 'states': {'State 0': 2, 'State 1': 2, 'State 2': 1}, 'companies': {'Co 0': 3, 'Co 1': 2}, 'extraction_stats': {'pagination': 0, 'companies': 0, 'cities': 0, 'nearby': 0, 'duplicates_found': 0, 'total_unique': 0}})",
+  "stdout": "\n================================================================================\n💾 EXPORTING DATA - MULTI-FORMAT SERIALIZATION\n================================================================================\n\n  Exporting CSV...\n    ✓ <TMP>/out/ssri_all_pumps_20260101_000000.csv (0.00MB)\n  Exporting JavaScript...\n    ✓ <TMP>/out/ssri_all_pumps_20260101_000000.js (0.00MB)\n  Exporting GeoJSON...\n    ✓ <TMP>/out/ssri_all_pumps_20260101_000000.geojson (0.00MB, 4 features)\n  Exporting JSON...\n    ✓ <TMP>/out/ssri_all_pumps_20260101_000000.json (0.00MB)\n  Generating summary...\n    ✓ <TMP>/out/ssri_all_pumps_summary_20260101_000000.json\n\n✅ Export complete to <TMP>/out/\n"
+ },
+ "pumps_export_empty": {
+  "files": {},
+  "ret": "None",
+  "stdout": "\n================================================================================\n💾 EXPORTING DATA - MULTI-FORMAT SERIALIZATION\n================================================================================\n✗ No data to export\n"
+ },
+ "service_export": {
+  "files": {
+   "api-data-integration/DIJKSTRA_SERVICE_OUTLETS_20260101_000000.xlsx": {
+    "FILTER ANALYSIS": [
+     [
+      "'Filter Component'",
+      "'Status'",
+      "'Use Case'"
+     ],
+     [
+      "'ATM (Automatic Teller Machine)'",
+      "'✓ 3 outlets'",
+      "'Cash withdrawal for toll payment'"
+     ],
+     [
+      "'POS (Point of Sale)'",
+      "'✓ 3 outlets'",
+      "'Digital/card transaction capability'"
+     ],
+     [
+      "'Cash Dispensing'",
+      "'✓ 3 outlets'",
+      "'Direct cash access for travelers'"
+     ],
+     [
+      "'Bank Partner (SBI)'",
+      "'✓ All filtered outlets'",
+      "'Banking infrastructure trust'"
+     ],
+     [
+      "'Transaction Capability'",
+      "'✓ Full financial transaction support'",
+      "'Flexible payment options'"
+     ],
+     [
+      "'Service Completeness'",
+      "'✓ All 3 services required'",
+      "'Complete financial service availability'"
+     ]
+    ],
+    "SERVICE OUTLET DIRECTORY": [
+     [
+      "'Outlet Name'",
+      "'Service Type'",
+      "'Company'",
+      "'State'",
+      "'Has ATM'",
+      "'Has POS'",
+      "'Has Cash'",
+      "'Bank Partner'",
+      "'Source'"
+     ],
+     [
+      "'Svc 0'",
+      "'Cash@PoS'",
+      "'SBI'",
+      "'State A'",
+      "'✓'",
+      "'✓'",
+      "'✓'",
+      "'SBI'",
+      "'Cash@PoS'"
+     ],
+     [
+      "'Svc 1'",
+      "'Cash@PoS'",
+      "'SBI'",
+      "'State A'",
+      "'✓'",
+      "'✗'",
+      "'✓'",
+      "'SBI'",
+      "'Cash@PoS'"
+     ],
+     [
+      "'Svc 2'",
+      "'Cash@PoS'",
+      "'SBI'",
+      "'State A'",
+      "'✓'",
+      "'✓'",
+      "'✓'",
+      "'SBI'",
+      "'Cash@PoS'"
+     ]
+    ],
+    "SUMMARY": [
+     [
+      "'Metric'",
+      "'Value'"
+     ],
+     [
+      "'Total Outlets Available'",
+      "'10'"
+     ],
+     [
+      "'Service-Enabled Outlets (Filtered)'",
+      "'3'"
+     ],
+     [
+      "'Filter Effectiveness'",
+      "'30.00%'"
+     ],
+     [
+      "'Toll Plazas Analyzed'",
+      "3"
+     ],
+     [
+      "'Dijkstra Runs'",
+      "3"
+     ],
+     [
+      "'Service Paths Found'",
+      "3"
+     ],
+     [
+      "'Avg Distance to Service (km)'",
+      "'4.76'"
+     ],
+     [
+      "'Service Filter Type'",
+      "'POS/ATM/Cash Dispensing'"
+     ],
+     [
+      "'Services Included'",
+      "'ATM, Point of Sale, Cash withdrawal'"
+     ],
+     [
+      "'Bank Partner'",
+      "'State Bank of India (SBI)'"
+     ],
+     [
+      "'Graph Vertices'",
+      "6"
+     ],
+     [
+      "'Graph Edges (to service outlets)'",
+      "9"
+     ]
+    ],
+    "TOLL TO SERVICE OUTLETS": [
+     [
+      "'Toll Plaza'",
+      "'State'",
+      "'Min Distance to Service (km)'",
+      "'Service Outlets Reachable'",
+      "'ATM Coverage'",
+      "'POS Available'",
+      "'Cash Dispensing'"
+     ],
+     [
+      "'Plaza 0'",
+      "'State B'",
+      "4.26",
+      "0",
+      "'Yes (SBI)'",
+      "'Yes'",
+      "'Yes'"
+     ],
+     [
+      "'Plaza 1'",
+      "'State A'",
+      "5.26",
+      "1",
+      "'Yes (SBI)'",
+      "'Yes'",
+      "'Yes'"
+     ],
+     [
+      "'Plaza 2'",
+      "'State B'",
+      "6.26",
+      "2",
+      "'Yes (SBI)'",
+      "'Yes'",
+      "'Yes'"
+     ]
+    ]
+   }
+  },
+  "ret": "'./api-data-integration/DIJKSTRA_SERVICE_OUTLETS_20260101_000000.xlsx'",
+  "stdout": "\n💾 Exporting service outlet analysis to Excel...\n  Writing SUMMARY sheet...\n  Writing TOLL TO SERVICE OUTLETS sheet...\n  Writing SERVICE OUTLET DIRECTORY sheet...\n  Writing FILTER ANALYSIS sheet...\n  ✓ Excel created: ./api-data-integration/DIJKSTRA_SERVICE_OUTLETS_20260101_000000.xlsx (0.01MB)\n"
+ },
+ "service_load": {
+  "files": {},
+  "ret": "({'total_outlets_available': 5, 'service_outlets_filtered': 2, 'filter_percentage': 40.0, 'dijkstra_runs': 0, 'shortest_paths_found': 0, 'avg_distance_to_service': 0, 'graph_vertices': 2, 'graph_edges': 0}, [{'id': 'OUTLET_CASHATPOS_0', 'name': 'Svc A', 'type': 'Cash@PoS', 'company': 'SBI', 'lat': 21.5, 'lng': 72.5, 'has_atm': True, 'has_pos': True, 'has_cash': True, 'bank_partner': 'State Bank of India', 'source': 'Cash@PoS'}, {'id': 'OUTLET_CASHATPOS_1', 'name': 'Svc B', 'type': 'ATM', 'company': 'SBI', 'lat': 22.5, 'lng': 72.5, 'has_atm': True, 'has_pos': True, 'has_cash': True, 'bank_partner': 'State Bank of India', 'source': 'Cash@PoS'}], ['OUTLET_CASHATPOS_0', 'OUTLET_CASHATPOS_1'])",
+  "stdout": "\n💳 Loading and filtering POS/ATM/Cash service outlets...\n\n  Loading SSRI petrol pumps...\n    ✓ Loaded 3 SSRI pumps\n  Loading Cash@PoS/ATM service outlets...\n    ✓ Loaded 2 service-enabled outlets\n\n📊 Filtering Results:\n  Total outlets available: 5\n  Service-enabled outlets: 2\n  Filter percentage: 40.00%\n  Reduction ratio: 2.5:1\n\n🔗 Adding service outlets to graph...\n  ✓ Graph vertices: 2\n"
+ },
+ "toll_map": {
+  "files": {
+   "api-data-integration/toll_retail_map_20260101_000000.html": "<!DOCTYPE html>\n<html>\n<head>\n    <meta charset=\"utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Toll Plaza + Retail Outlets Network Map</title>\n    <link rel=\"stylesheet\" href=\"https://unpkg.com/leaflet@1.9.4/dist/leaflet.css\" />\n    <script src=\"https://unpkg.com/leaflet@1.9.4/dist/leaflet.js\"></script>\n    <style>\n        * { margin: 0; padding: 0; box-sizing: border-box; }\n        body { font: 14px/1.5 -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif; }\n        #map { position: absolute; top: 0; bottom: 0; width: 100%; }\n        .info {\n            padding: 6px 8px;\n            font: 14px Arial, Helvetica, sans-serif;\n            background: white;\n            background: rgba(255,255,255,0.8);\n            box-shadow: 0 0 15px rgba(0,0,0,0.2);\n            border-radius: 5px;\n        }\n        .info h4 {\n            margin: 0 0 5px;\n            color: #333;\n            font-weight: bold;\n        }\n        .legend {\n            line-height: 18px;\n            color: #555;\n        }\n        .legend i {\n            width: 18px;\n            height: 18px;\n            float: left;\n            margin-right: 8px;\n            opacity: 0.7;\n            border-radius: 50%;\n        }\n        .stats {\n            padding: 10px;\n            background: rgba(255,255,255,0.95);\n            border-radius: 5px;\n            box-shadow: 0 0 15px rgba(0,0,0,0.2);\n        }\n        .stats h3 {\n            margin: 0 0 10px;\n            color: #333;\n            font-size: 16px;\n        }\n        .stat-item {\n            padding: 5px 0;\n            border-bottom: 1px solid #eee;\n        }\n        .stat-item:last-child { border-bottom: none; }\n        .stat-label {\n            color: #666;\n            font-size: 12px;\n        }\n        .stat-value {\n            color: #2196F3;\n            font-weight: bold;\n            font-size: 14px;\n        }\n        .toll-popup {\n            background: #e3f2fd;\n            border-left: 4px solid #1976d2;\n        }\n        .outlet-popup {\n            background: #f1f8e9;\n            border-left: 4px solid #558b2f;\n        }\n    </style>\n</head>\n<body>\n    <div id=\"map\"></div>\n    <script>\n        // Initialize map\n        const map = L.map('map').setView([23.0, 79.0], 5);\n\n        // Add base map tiles\n        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {\n            attribution: '© OpenStreetMap contributors',\n            maxZoom: 19\n        }).addTo(map);\n\n        // Toll plaza layer\n        const tollLayer = L.featureGroup();\n        const outletLayer = L.featureGroup();\n\n        // Add toll plaza markers\n        const tollPlazas = [{\"id\": \"T0\", \"name\": \"Plaza 0\", \"highway\": \"NH0\", \"state\": \"State B\", \"lat\": 20.0, \"lng\": 75.0}, {\"id\": \"T1\", \"name\": \"Plaza 1\", \"highway\": \"NH1\", \"state\": \"State A\", \"lat\": 21.0, \"lng\": 76.0}, {\"id\": \"T2\", \"name\": \"Plaza 2\", \"highway\": \"NH2\", \"state\": \"State B\", \"lat\": 22.0, \"lng\": 77.0}];\n        tollPlazas.forEach(plaza => {\n            const marker = L.circleMarker([plaza.lat, plaza.lng], {\n                radius: 6,\n                fillColor: '#1976d2',\n                color: '#0d47a1',\n                weight: 2,\n                opacity: 0.8,\n                fillOpacity: 0.7,\n                className: 'toll-marker'\n            });\n\n            const popupContent = `\n                <div class=\"toll-popup\">\n                    <h4>🛣️ ${plaza.name}</h4>\n                    <p><strong>Highway:</strong> ${plaza.highway}</p>\n                    <p><strong>State:</strong> ${plaza.state}</p>\n                    <p><strong>Coordinates:</strong> ${plaza.lat.toFixed(4)}, ${plaza.lng.toFixed(4)}</p>\n                </div>\n            `;\n            marker.bindPopup(popupContent);\n            tollLayer.addLayer(marker);\n        });\n\n        // Add retail outlet markers\n        const outlets = [{\"id\": \"O0\", \"name\": \"Outlet 0\", \"type\": \"ATM Station\", \"company\": \"Co Y\", \"state\": \"State A\", \"city\": \"City 0\", \"lat\": 20.1, \"lng\": 75.1, \"has_cng\": false}, {\"id\": \"O1\", \"name\": \"Outlet 1\", \"type\": \"Petrol Pump\", \"company\": \"Co X\", \"state\": \"State A\", \"city\": \"City 1\", \"lat\": 21.1, \"lng\": 76.1, \"has_cng\": true}, {\"id\": \"O2\", \"name\": \"Outlet 2\", \"type\": \"ATM Station\", \"company\": \"Co Y\", \"state\": \"State A\", \"city\": \"City 2\", \"lat\": 22.1, \"lng\": 77.1, \"has_cng\": false}, {\"id\": \"O3\", \"name\": \"Outlet 3\", \"type\": \"Petrol Pump\", \"company\": \"Co X\", \"state\": \"State A\", \"city\": \"City 3\", \"lat\": 23.1, \"lng\": 78.1, \"has_cng\": true}];\n        outlets.forEach(outlet => {\n            if (outlet.lat && outlet.lng) {\n                const color = outlet.type === 'Petrol Pump' ? '#558b2f' : '#ff6f00';\n                const marker = L.circleMarker([outlet.lat, outlet.lng], {\n                    radius: 4,\n                    fillColor: color,\n                    color: 'rgba(0,0,0,0.3)',\n                    weight: 1,\n                    opacity: 0.7,\n                    fillOpacity: 0.6\n                });\n\n                const icon = outlet.type === 'Petrol Pump' ? '⛽' : '🏧';\n                const popupContent = `\n                    <div class=\"outlet-popup\">\n                        <h4>${icon} ${outlet.name}</h4>\n                        <p><strong>Type:</strong> ${outlet.type}</p>\n                        <p><strong>Company:</strong> ${outlet.company}</p>\n                        <p><strong>State:</strong> ${outlet.state}</p>\n                        <p><strong>City:</strong> ${outlet.city}</p>\n                        ${outlet.has_cng ? '<p style=\"color: #d32f2f;\">✓ CNG Available</p>' : ''}\n                    </div>\n                `;\n                marker.bindPopup(popupContent);\n                outletLayer.addLayer(marker);\n            }\n        });\n\n        // Add layers to map\n        tollLayer.addTo(map);\n        outletLayer.addTo(map);\n\n        // Layer control\n        const layerControl = L.control.layers(\n            {},\n            {\n                '🛣️ Toll Plazas': tollLayer,\n                '⛽ Petrol Pumps': L.featureGroup(),\n                '🏧 ATM Stations': L.featureGroup()\n            },\n            { position: 'topright', collapsed: false }\n        );\n        layerControl.addTo(map);\n\n        // Add legend\n        const legend = L.control({ position: 'bottomleft' });\n        legend.onAdd = function(map) {\n            const div = L.DomUtil.create('div', 'info legend');\n            div.innerHTML = `\n                <h4>Legend</h4>\n                <div class=\"stat-item\">\n                    <i style=\"background: #1976d2; border: 2px solid #0d47a1;\"></i>\n                    <span>Toll Plaza</span>\n                </div>\n                <div class=\"stat-item\">\n                    <i style=\"background: #558b2f; border: 1px solid rgba(0,0,0,0.3);\"></i>\n                    <span>Petrol Pump</span>\n                </div>\n                <div class=\"stat-item\">\n                    <i style=\"background: #ff6f00; border: 1px solid rgba(0,0,0,0.3);\"></i>\n                    <span>ATM Station</span>\n                </div>\n            `;\n            return div;\n        };\n        legend.addTo(map);\n\n        // Add statistics panel\n        const stats = L.control({ position: 'topright' });\n        stats.onAdd = function(map) {\n            const div = L.DomUtil.create('div', 'stats');\n            div.innerHTML = `\n                <h3>📊 Network Statistics</h3>\n                <div class=\"stat-item\">\n                    <span class=\"stat-label\">Toll Plazas</span>\n                    <span class=\"stat-value\">3</span>\n                </div>\n                <div class=\"stat-item\">\n                    <span class=\"stat-label\">Petrol Pumps</span>\n                    <span class=\"stat-value\">2</span>\n                </div>\n                <div class=\"stat-item\">\n                    <span class=\"stat-label\">ATM Stations</span>\n                    <span class=\"stat-value\">2</span>\n                </div>\n                <div class=\"stat-item\">\n                    <span class=\"stat-label\">Total Outlets</span>\n                    <span class=\"stat-value\">4</span>\n                </div>\n            `;\n            return div;\n        };\n        stats.addTo(map);\n\n        // Fit bounds to show all markers\n        const allMarkers = [...tollLayer.getLayers(), ...outletLayer.getLayers()];\n        if (allMarkers.length > 0) {\n            const group = new L.featureGroup(allMarkers);\n            map.fitBounds(group.getBounds().pad(0.1));\n        }\n    </script>\n</body>\n</html>"
+  },
+  "ret": "'./api-data-integration/toll_retail_map_20260101_000000.html'",
+  "stdout": "\n🗺️  Creating interactive map...\n  ✓ Map created: ./api-data-integration/toll_retail_map_20260101_000000.html\n"
+ }
+}

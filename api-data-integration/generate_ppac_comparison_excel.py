@@ -130,8 +130,9 @@ class PPACComparison:
                         try:
                             count = int(float(row['Count']))
                             ppac_state_counts[state_name] = count
-                        except:
-                            pass
+                        except (ValueError, TypeError, OverflowError):
+                            # Non-numeric Count (blank, text, inf): skip this state row
+                            continue
                     print(f"  ✓ Parsed PPAC data: {len(ppac_state_counts)} states with outlet counts")
                 else:
                     print(f"  ⚠ PPAC columns not as expected")
