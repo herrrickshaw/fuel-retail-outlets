@@ -23,6 +23,8 @@ from datetime import datetime
 from typing import Dict, List, Tuple, Set
 from collections import defaultdict
 
+from toll_coords import plaza_lat_lng
+
 class ServiceFilteredDijkstra:
     """Dijkstra with POS/ATM/cash service filtering."""
 
@@ -63,7 +65,7 @@ class ServiceFilteredDijkstra:
 
         def add_edge(self, u: str, v: str, weight: float):
             """Add weighted edge."""
-            if weight > 0:
+            if weight >= 0:  # a 0 km edge (outlet at the plaza) is valid
                 self.edges[u].append((v, weight))
 
         def haversine_distance(self, lat1: float, lng1: float, lat2: float, lng2: float) -> float:
@@ -86,27 +88,14 @@ class ServiceFilteredDijkstra:
             toll_df = pd.read_csv(toll_csv)
             toll_df = toll_df.dropna(subset=['plaza_name'])
 
-            state_coords = {
-                'Gujarat': (22.5, 72.5), 'Maharashtra': (19.5, 75.5),
-                'Rajasthan': (27.0, 77.5), 'Haryana': (29.5, 77.0),
-                'Tamil Nadu': (11.0, 79.0), 'Karnataka': (15.0, 76.0),
-                'Andhra Pradesh': (15.5, 78.5), 'Telangana': (18.5, 78.5),
-                'Punjab': (31.0, 75.5), 'Uttar Pradesh': (27.0, 79.0),
-                'Delhi': (28.7, 77.2), 'Himachal Pradesh': (32.0, 77.0),
-                'Madhya Pradesh': (23.0, 79.5), 'West Bengal': (24.5, 88.0),
-            }
-
             for idx, row in toll_df.iterrows():
                 state = str(row.get('state', '')).strip()
                 toll_id = f"TOLL_{idx}"
 
-                if state in state_coords:
-                    lat, lng = state_coords[state]
-                    np.random.seed(hash(state) % 2**32)
-                    lat += np.random.uniform(-0.3, 0.3)
-                    lng += np.random.uniform(-0.3, 0.3)
-                else:
-                    lat, lng = 23.0, 79.0
+                coords = plaza_lat_lng(row)
+                if coords is None:  # never invent a location (see toll_coords.py)
+                    continue
+                lat, lng = coords
 
                 self.graph.add_vertex(toll_id, 'toll_plaza', lat, lng)
                 self.toll_plazas.append({
@@ -309,7 +298,9 @@ class ServiceFilteredDijkstra:
                 self.stats['dijkstra_runs'] += 1
                 self.stats['shortest_paths_found'] += len(service_distances)
 
-            print(f"✓ Min service distance: {min_service_dist:.2f}km")
+                print(f"✓ Min service distance: {min_service_dist:.2f}km")
+            else:
+                print("✗ No service outlet reachable")
 
         if self.stats['shortest_paths_found'] > 0:
             self.stats['avg_distance_to_service'] = (
