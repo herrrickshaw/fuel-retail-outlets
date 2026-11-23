@@ -151,6 +151,13 @@ def test_validate_picks_best_of_several_candidates(val):
     assert m[0][1]["name"] == "Ram Fuels Kochi"
 
 
+def test_validate_tie_keeps_the_first_candidate(val):
+    val.ssri_outlets = [ss("Shell Point", company="FIRST"), ss("Shell Point", company="SECOND")]
+    val.extracted_outlets = [ex("Shell Point")]
+    m, _ = val.validate_against_ssri()
+    assert m[0][1]["company"] == "FIRST"                              # strict '>' : an equal score never replaces the best
+
+
 def test_validate_prints_progress_every_100(val, capsys):
     val.ssri_outlets = [ss("a")]
     val.extracted_outlets = [ex("zzzz")] * 100

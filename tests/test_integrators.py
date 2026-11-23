@@ -43,6 +43,10 @@ def test_find_nearby_radius_boundary_and_sorting_inputs(tri):
     assert len(near5) == 1 and near5[0]["distance_km"] == pytest.approx(4.9, abs=0.01)
     assert len(tri.find_nearby_outlets(plaza, 25.0)) == 2                      # outlet at longitude 0 is falsy -> skipped
     assert tri.find_nearby_outlets(plaza) == tri.find_nearby_outlets(plaza, 25.0)   # default radius is 25 km
+    same_spot = [outlet(10.0, 20.0)]
+    tri.retail_outlets = same_spot
+    assert len(tri.find_nearby_outlets(plaza, 0.0)) == 1                       # distance exactly equal to the radius is inside
+    tri.retail_outlets = [outlet(10 + 4.9 * KM, 20), outlet(10 + 5.1 * KM, 20), outlet(None, 20), outlet(10, 0)]
     assert tri.find_nearby_outlets({"latitude": None, "longitude": 20.0}) == []
     assert tri.find_nearby_outlets({"latitude": 10.0, "longitude": 0}) == []
 
@@ -76,14 +80,14 @@ def test_integrate_counts_by_ring_and_type(tri):
     tri.toll_plazas = [{"name": "P", "highway": "NH", "state": "Gujarat", "latitude": 10.0, "longitude": 20.0},
                        {"name": "NoCoord", "highway": "NH", "state": "Goa", "latitude": None, "longitude": None}]
     tri.retail_outlets = [outlet(10 + 1 * KM, 20), outlet(10 + 2 * KM, 20, typ="Cash@PoS ATM Station"),
-                          outlet(10 + 8 * KM, 20), outlet(10 + 20 * KM, 20), outlet(10 + 40 * KM, 20)]
+                          outlet(10 + 5.5 * KM, 20), outlet(10 + 8 * KM, 20), outlet(10 + 20 * KM, 20), outlet(10 + 40 * KM, 20)]
     tri.integrate_toll_and_outlets()
     p, n = tri.integrated_data
     assert (p["petrol_pumps_5km"], p["atm_stations_5km"], p["total_outlets_5km"],
-            p["total_outlets_10km"], p["total_outlets_25km"]) == (1, 1, 2, 3, 4)
+            p["total_outlets_10km"], p["total_outlets_25km"]) == (1, 1, 2, 4, 5)       # 5.5 km is outside the 5 km ring
     assert n["total_outlets_25km"] == 0
-    assert tri.stats["outlets_within_5km"] == 2 and tri.stats["outlets_within_10km"] == 3
-    assert tri.stats["outlets_within_25km"] == 4 and tri.stats["integrations_created"] == 2
+    assert tri.stats["outlets_within_5km"] == 2 and tri.stats["outlets_within_10km"] == 4
+    assert tri.stats["outlets_within_25km"] == 5 and tri.stats["integrations_created"] == 2
 
 
 def test_load_retail_outlets_without_sources_is_still_true(tri, monkeypatch):

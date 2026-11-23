@@ -16,7 +16,7 @@ import progress_monitor as pm
 PUMPS = [
     {"state": "Kerala", "company": "IOCL", "has_petrol": True, "has_diesel": True, "has_cng": True, "petrol_price": 100.0},
     {"state": "Kerala", "company": "BPCL", "has_petrol": True, "has_diesel": True, "has_cng": False, "petrol_price": 0},
-    {"state": "Goa", "company": "IOCL", "has_petrol": True, "has_diesel": False, "has_cng": False},
+    {"state": "Goa", "company": "IOCL", "has_petrol": True, "has_diesel": False, "has_cng": False, "petrol_price": 99.0},
     {"state": "Goa", "company": "Shell", "has_petrol": False, "has_diesel": True, "has_cng": True, "petrol_price": 101.0},
 ]
 
@@ -70,7 +70,7 @@ def test_ssri_analysis_counts_and_percentages(summ):
     v = dict(zip(*[summ.create_ssri_analysis()[c] for c in ("Metric", "Value")]))
     assert v["Total Pumps"] == "4" and v["States Covered"] == "2" and v["Companies"] == "3"
     assert v["With CNG"] == "2 (50.0%)"
-    assert v["With Fuel Prices"] == "2 (50.0%)"          # price 0 / missing do not count
+    assert v["With Fuel Prices"] == "3 (75.0%)"          # price 0 does not count (3 of 4 carry a price)
     summ.ssri_data = []
     assert summ.create_ssri_analysis().empty
 
@@ -388,14 +388,16 @@ def test_kaggle_export_all_formats(tmp_path, capsys):
     k = kaggle_loader.KaggleDatasetLoader()
     assert k.export_all_formats(str(tmp_path / "x")) is None          # nothing loaded -> nothing written
     k.outlets = [{"name": "A", "latitude": 1.0, "longitude": 2.0, "company": "c", "city": "ci", "state": "st", "source": "Kaggle"},
-                 {"name": "Z", "latitude": 0.0, "longitude": 0.0, "company": "c", "city": "ci", "state": "st", "source": "Kaggle"}]
+                 {"name": "Z", "latitude": 0.0, "longitude": 0.0, "company": "c", "city": "ci", "state": "st", "source": "Kaggle"},
+                 {"name": "Y", "latitude": 0.0, "longitude": 5.0, "company": "c", "city": "ci", "state": "st", "source": "Kaggle"},
+                 {"name": "X", "latitude": 5.0, "longitude": 0.0, "company": "c", "city": "ci", "state": "st", "source": "Kaggle"}]
     k.stats.update(states=1, cities=1, companies=1)
     out = tmp_path / "out"
     assert k.export_all_formats(str(out)) == str(out)
     gj = json.loads(next(out.glob("*.geojson")).read_text())
-    assert len(gj["features"]) == 1                                   # lat/lng of exactly 0 is falsy and dropped
+    assert len(gj["features"]) == 1                                   # a lat OR lng of exactly 0 is falsy and the outlet dropped
     js = next(out.glob("*.js")).read_text()
-    assert "const FUEL_PUMP_LOCATIONS = [" in js and "total: 2," in js
+    assert "const FUEL_PUMP_LOCATIONS = [" in js and "total: 4," in js
     k.print_summary()
     assert capsys.readouterr().out
 

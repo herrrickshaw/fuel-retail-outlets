@@ -142,6 +142,18 @@ def test_exact_radius_boundary_is_inclusive():
     assert a.stats["outlets_within_1km"] == a.stats["outlets_within_50km"] == 1
 
 
+def test_each_radius_is_inclusive_at_exactly_its_limit(monkeypatch):
+    a = dm.TollRetailDistanceAnalyzer()
+    a.toll_plazas = [{"id": 0, "name": "T", "highway": "", "state": "", "lat": 0.0, "lng": 0.0}]
+    a.retail_outlets = [{"id": i, "name": f"o{i}", "company": "c", "city": "c", "has_cng": False, "lat": 1.0, "lng": 1.0} for i in range(5)]
+    dists = iter([1.0, 5.0, 10.0, 25.0, 50.0])
+    monkeypatch.setattr(a, "haversine_distance", lambda *args: next(dists))
+    a.calculate_distances()
+    s = a.stats
+    assert (s["outlets_within_1km"], s["outlets_within_5km"], s["outlets_within_10km"], s["outlets_within_25km"],
+            s["outlets_within_50km"]) == (1, 2, 3, 4, 5)
+
+
 def test_haversine_wrapper(an):
     assert an.haversine_distance(0, 0, 0, 1) == pytest.approx(111.19, abs=0.05)
     assert an.haversine_distance(None, 0, 0, 1) == float("inf")

@@ -213,6 +213,16 @@ def test_nearby_grid_is_17_cities_by_3_radii(mp, monkeypatch, sleeps):
     assert mp.stats["nearby"] == 1 and mp.stats["duplicates_found"] == 53
 
 
+def test_geojson_export_requires_both_coordinates(mp, tmp_path):
+    mp.timestamp = "T"
+    pumps = [{"name": "ok", "latitude": 1.5, "longitude": 2.5, "city": "c", "state": "s", "company": "x", "address": ""},
+             {"name": "lat-only", "latitude": 1.5, "longitude": None, "city": "c", "state": "s", "company": "x", "address": ""},
+             {"name": "lng-only", "latitude": None, "longitude": 2.5, "city": "c", "state": "s", "company": "x", "address": ""}]
+    mp._export_geojson(pumps, str(tmp_path))
+    gj = json.loads((tmp_path / "ssri_all_pumps_T.geojson").read_text())
+    assert [f["properties"]["name"] for f in gj["features"]] == ["ok"]
+
+
 def test_export_all_and_run(mp, monkeypatch, tmp_path, sleeps):
     assert mp.export_all(str(tmp_path / "none")) is None
     mp._add_pumps([{"name": "A", "latitude": 1.5, "longitude": 2.5, "state": "Goa", "company": "IOCL"},
