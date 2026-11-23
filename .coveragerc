@@ -1,0 +1,26 @@
+[run]
+source = api-data-integration
+# Omitted: live-site / credential / real-document drivers that cannot run offline.
+#   crawl_ssri.py                      module-level crawler: starts hitting the SSRI API on import
+#   explore_ssri_api.py                live endpoint discovery (probes the real API)
+#   ssr_api_handler.py                 authenticated API client, prompts for credentials (getpass)
+#   ssr_auto_auth.py                   credential wrapper around ssr_api_handler
+#   ssri_html_scraper.py               scrapes live SSRI HTML pages
+#   extract_bpcl_*.py                  scrape the live BPCL dealer site
+#   extract_cashatpos_from_pdf.py,
+#   validate_service_outlets_against_pdf.py   parse the real SBI Cash@PoS PDF (pdfplumber)
+omit =
+    api-data-integration/crawl_ssri.py
+    api-data-integration/explore_ssri_api.py
+    api-data-integration/ssr_api_handler.py
+    api-data-integration/ssr_auto_auth.py
+    api-data-integration/ssri_html_scraper.py
+    api-data-integration/extract_bpcl_dealership_data.py
+    api-data-integration/extract_bpcl_by_zone_state_district.py
+    api-data-integration/extract_cashatpos_from_pdf.py
+    api-data-integration/validate_service_outlets_against_pdf.py
+
+[report]
+exclude_lines =
+    pragma: no cover
+    if __name__ == .__main__.:
